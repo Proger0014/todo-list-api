@@ -1,6 +1,6 @@
 ﻿using TodoList.Extensions;
 
-namespace UnitTests.Extensions;
+namespace UnitTests.ExtensionsTests;
 
 public class CommonExtensionsTests
 {
