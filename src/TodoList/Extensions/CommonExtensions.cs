@@ -1,4 +1,10 @@
-﻿namespace TodoList.Extensions;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using TodoList.Models.User;
+
+namespace TodoList.Extensions;
 
 public static class CommonExtensions
 {

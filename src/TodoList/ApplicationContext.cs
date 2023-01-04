@@ -1,12 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using TodoList.Extensions;
 using TodoList.Models.RefreshToken;
+using TodoList.Models.SessionStorage;
 using TodoList.Models.User;
 
 public class ApplicationContext : DbContext
 {
 	public DbSet<User> Users { get; set; }
 	public DbSet<RefreshToken> RefreshTokens { get; set; }
+	public DbSet<Session> SessionStorage { get; set; }
 
 	public ApplicationContext()
 	{

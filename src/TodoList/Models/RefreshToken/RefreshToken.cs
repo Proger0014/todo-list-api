@@ -29,7 +29,7 @@ public class RefreshToken
 
     public bool IsRevorked()
     {
-        if (AddedTime > ExpirationTime)
+        if (DateTime.Now > ExpirationTime)
         {
             return true;
         }

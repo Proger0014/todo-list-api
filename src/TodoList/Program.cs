@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using TodoList.Models.RefreshToken;
+using TodoList.Models.SessionStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +13,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<ApplicationContext>();
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<UserService>();
-builder.Services.AddSingleton<TokenService>();
+builder.Services.AddSingleton<RefreshTokenRepository>();
+builder.Services.AddSingleton<RefreshTokenService>();
+builder.Services.AddSingleton<SessionRepository>();
+builder.Services.AddSingleton<SessionService>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // схема аутентификации с помощью jwt токенов
@@ -26,7 +31,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // с
             ValidAudience = builder.Configuration["Jwt:Audience"],
             // будет ли валидироваться время существования токена
             ValidateLifetime = true,
-            // установка включа безопасности
+            // установка ключа безопасности
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])), // [РАЗОБРАТСЬЯ]
             // валидация ключа безопасности
@@ -41,9 +46,11 @@ builder.Services.AddControllers();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.Cookie.Path = "/api/auth";
+    options.Cookie.Domain = "/";
+    options.Cookie.Path = "/api/v{version:apiVersion}/auth";
     options.Cookie.Name = "AppSession";
     options.Cookie.HttpOnly = true;
+    options.Cookie.Expiration = TimeSpan.FromMinutes(20);
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

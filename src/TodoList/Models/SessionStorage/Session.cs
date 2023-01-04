@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TodoList.Models.SessionStorage;
 
-public class SessionStorage
+public class Session
 {
     [Key, Column("id")]
     public string Id { get; set; }
@@ -13,17 +13,31 @@ public class SessionStorage
     public string FingerPrint { get; set; }
     [Column("refresh_token")]
     public string RefreshToken { get; set; }
+    [Column("expiration")]
+    public DateTime Expiration { get; set; }
 
-    public SessionStorage(
+    public Session(
         string id, long userId, 
         string fingerPrint, 
-        string refreshToken)
+        string refreshToken,
+        DateTime expiration)
     {
         Id = id;
         UserId = userId;
         FingerPrint = fingerPrint;
         RefreshToken = refreshToken;
+        Expiration = expiration;
     }
 
-    public SessionStorage() { }
+    public Session() { }
+
+    public bool IsRevorked()
+    {
+        if (DateTime.Now > Expiration)
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

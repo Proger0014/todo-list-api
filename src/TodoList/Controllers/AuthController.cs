@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using TodoList.Services;
 using TodoList.DTO.User;
 using TodoList.DTO.Token;
+using TodoList.Extensions;
+using System.Linq.Expressions;
 
 namespace TodoList.Controllers;
 
@@ -12,12 +14,17 @@ namespace TodoList.Controllers;
 public class AuthController : ControllerBase
 {
     private UserService _userService;
-    private TokenService _tokenService;
+    private RefreshTokenService _refreshTokenService;
+    private SessionService _sessionService;
 
-    public AuthController(UserService userService, TokenService tokenService)
+    public AuthController(
+        UserService userService, 
+        RefreshTokenService refreshTokenService, 
+        SessionService sessionService)
     {
         _userService = userService;
-        _tokenService = tokenService;
+        _refreshTokenService = refreshTokenService;
+        _sessionService = sessionService;
     }
 
 
@@ -28,13 +35,32 @@ public class AuthController : ControllerBase
     {
         var user = _userService.GetUserByLogin(login);
 
-        if (user != null)
+        if (user == null)
         {
-            var token = _tokenService.GenerateToken(user);
-            return Ok(new TokenResponse(token, "123"));
+            return NotFound("User not found");
         }
 
-        return NotFound("User not found");
+        var accessToken = user.GenerateJWT();
+        var refreshToken = _refreshTokenService.GenerateRefreshToken(user);
+
+        _sessionService.NewSession(new Models.SessionStorage.Session(
+            HttpContext.Session.Id,
+            user.Id,
+            HttpContext.Request.Headers["User-Agent"].ToString(),
+            refreshToken,
+            DateTime.Now.Add(TimeSpan.FromMinutes(20))));
+
+        var cookieOptions = new CookieOptions()
+        {
+            HttpOnly = true,
+            MaxAge = TimeSpan.FromMinutes(20)
+        };
+
+        HttpContext.Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+
+
+        return Ok(new TokenResponse(accessToken, refreshToken));
+
     }
 
     [AllowAnonymous]
