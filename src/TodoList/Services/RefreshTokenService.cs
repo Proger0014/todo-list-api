@@ -1,3 +1,4 @@
+using TodoList.DTO.Token;
 using TodoList.Models.RefreshToken;
 using TodoList.Models.User;
 
@@ -17,11 +18,17 @@ public class RefreshTokenService
 		return _refreshTokenRepository.GetByRefreshToken(refreshToken);
     }
 
-	public string GenerateRefreshToken(User user)
+	public RefreshToken GetRefreshTokenByUserId(long userId)
+	{
+		return _refreshTokenRepository.GetByUserId(userId);
+	}
+
+	public string GenerateRefreshToken(RefreshTokenCreate refreshTokenCreate)
 	{
 		var token = new RefreshToken(
             Guid.NewGuid().ToString(),
-			user.Id,
+			refreshTokenCreate.UserId,
+			refreshTokenCreate.FingerPrint,
 			DateTime.Now,
 			DateTime.Now.Add(TimeSpan.FromMinutes(10)));
 

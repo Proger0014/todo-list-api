@@ -4,7 +4,7 @@ using TodoList.Services;
 using TodoList.DTO.User;
 using TodoList.DTO.Token;
 using TodoList.Extensions;
-using System.Linq.Expressions;
+using TodoList.Models.RefreshToken;
 
 namespace TodoList.Controllers;
 
@@ -15,16 +15,13 @@ public class AuthController : ControllerBase
 {
     private UserService _userService;
     private RefreshTokenService _refreshTokenService;
-    private SessionService _sessionService;
 
     public AuthController(
         UserService userService, 
-        RefreshTokenService refreshTokenService, 
-        SessionService sessionService)
+        RefreshTokenService refreshTokenService)
     {
         _userService = userService;
         _refreshTokenService = refreshTokenService;
-        _sessionService = sessionService;
     }
 
 
@@ -40,24 +37,25 @@ public class AuthController : ControllerBase
             return NotFound("User not found");
         }
 
-        var accessToken = user.GenerateJWT();
-        var refreshToken = _refreshTokenService.GenerateRefreshToken(user);
+        try
+        {
+            var userLastRefreshToken = _refreshTokenService.GetRefreshTokenByUserId(user.Id);
+            _refreshTokenService.RemoveRefreshToken(userLastRefreshToken);
+        } catch (Exception) { }
 
-        _sessionService.NewSession(new Models.SessionStorage.Session(
-            HttpContext.Session.Id,
+        var accessToken = user.GenerateJWT();
+        var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate(
             user.Id,
-            HttpContext.Request.Headers["User-Agent"].ToString(),
-            refreshToken,
-            DateTime.Now.Add(TimeSpan.FromMinutes(20))));
+            HttpContext.Request.Headers["User-Agent"].ToString()));
 
         var cookieOptions = new CookieOptions()
         {
             HttpOnly = true,
-            MaxAge = TimeSpan.FromMinutes(20)
+            MaxAge = TimeSpan.FromMinutes(20),
+            Path = "/api/v1/auth"
         };
 
         HttpContext.Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
-
 
         return Ok(new TokenResponse(accessToken, refreshToken));
 
@@ -79,11 +77,39 @@ public class AuthController : ControllerBase
         }
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpPost]
     [Route("refresh-token")]
     public IActionResult RefreshToken()
     {
-        return BadRequest();
+        var currentRefreshTokenId = HttpContext.Request.Cookies["refreshToken"].ToString();
+        var currentRefreshToken = _refreshTokenService.GetRefreshToken(currentRefreshTokenId);
+        var user = _userService.GetUserById(currentRefreshToken.UserId);
+
+        if (currentRefreshTokenId == null ||
+            currentRefreshToken == null ||
+            currentRefreshToken.IsRevorked())
+        {
+            return BadRequest();
+        }
+
+        _refreshTokenService.RemoveRefreshToken(currentRefreshToken);
+        HttpContext.Response.Cookies.Delete("refreshToken");
+
+        var accessToken = user.GenerateJWT();
+        var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate(
+            user.Id,
+            HttpContext.Request.Headers["User-Agent"].ToString()));
+
+        var cookieOptions = new CookieOptions()
+        {
+            HttpOnly = true,
+            MaxAge = TimeSpan.FromMinutes(20),
+            Path = "/api/v1/auth"
+        };
+
+        HttpContext.Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+
+        return Ok(new TokenResponse(accessToken, refreshToken));
     }
 }

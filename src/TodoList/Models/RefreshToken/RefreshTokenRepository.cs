@@ -21,6 +21,18 @@ public class RefreshTokenRepository
         return rf;
     }
 
+    public RefreshToken GetByUserId(long userId)
+    {
+        var rf = _context.RefreshTokens.SingleOrDefault(rt => rt.UserId == userId);
+
+        if (rf == null)
+        {
+            throw new Exception("Not found refresh token");
+        }
+
+        return rf;
+    }
+
     public void AddRefreshToken(RefreshToken refreshToken)
     {
         _context.RefreshTokens.Add(refreshToken);

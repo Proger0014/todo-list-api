@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using TodoList.Models.RefreshToken;
-using TodoList.Models.SessionStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +14,6 @@ builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<RefreshTokenRepository>();
 builder.Services.AddSingleton<RefreshTokenService>();
-builder.Services.AddSingleton<SessionRepository>();
-builder.Services.AddSingleton<SessionService>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // схема аутентификации с помощью jwt токенов
@@ -33,9 +30,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // с
             ValidateLifetime = true,
             // установка ключа безопасности
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])), // [РАЗОБРАТСЬЯ]
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
             // валидация ключа безопасности
             ValidateIssuerSigningKey = true,
+            // отсюда: https://stackoverflow.com/questions/47754556/is-there-a-minimum-expiration-time-for-jwtsecuritytoken
+            ClockSkew = TimeSpan.Zero
         };
     }); // подключение этой аутентификации
 
@@ -46,8 +45,6 @@ builder.Services.AddControllers();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.Cookie.Domain = "/";
-    options.Cookie.Path = "/api/v{version:apiVersion}/auth";
     options.Cookie.Name = "AppSession";
     options.Cookie.HttpOnly = true;
     options.Cookie.Expiration = TimeSpan.FromMinutes(20);

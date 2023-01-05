@@ -7,6 +7,8 @@ public class RefreshToken
 {
     [Key, Column("token")]
     public string Token { get; set; }
+    [Column("finger_print")]
+    public string FingerPrint { get; set; }
     [Column("user_id")]
     public long UserId { get; set; }
     [Column("added_time")]
@@ -15,12 +17,14 @@ public class RefreshToken
     public DateTime ExpirationTime { get; set; }
 
     public RefreshToken(
-        string token, long userId, 
+        string token, long userId,
+        string fingerPrint,
         DateTime addedTime,
         DateTime expirationTime)
     {
         Token = token;
         UserId = userId;
+        FingerPrint = fingerPrint;
         AddedTime = addedTime;
         ExpirationTime = expirationTime;
     }
