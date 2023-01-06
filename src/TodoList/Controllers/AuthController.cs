@@ -5,6 +5,8 @@ using TodoList.DTO.User;
 using TodoList.DTO.Token;
 using TodoList.Extensions;
 using TodoList.Models.RefreshToken;
+using System.Net;
+using Microsoft.AspNetCore.Http;
 
 namespace TodoList.Controllers;
 
@@ -39,12 +41,11 @@ public class AuthController : ControllerBase
 
         var userLastRefreshToken = _refreshTokenService.GetRefreshTokenByUserId(user.Id);
 
-        if (userLastRefreshToken == null)
+        if (userLastRefreshToken != null)
         {
-            return BadRequest();
+            _refreshTokenService.RemoveRefreshToken(userLastRefreshToken);
         }
 
-        _refreshTokenService.RemoveRefreshToken(userLastRefreshToken);
 
         var accessToken = user.GenerateJWT();
         var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate(
@@ -85,9 +86,10 @@ public class AuthController : ControllerBase
     [Route("refresh-token")]
     public IActionResult RefreshToken()
     {
-        var currentRefreshTokenId = HttpContext.Request.Cookies["refreshToken"].ToString();
+        bool hasRefreshToken = HttpContext.Request.Cookies
+            .TryGetValue("refreshToken", out string? currentRefreshTokenId);
 
-        if (string.IsNullOrEmpty(currentRefreshTokenId))
+        if (!hasRefreshToken)
         {
             return BadRequest();
         }
@@ -102,7 +104,7 @@ public class AuthController : ControllerBase
         }
 
         _refreshTokenService.RemoveRefreshToken(currentRefreshToken);
-        HttpContext.Response.Cookies.Delete("refreshToken");
+        DeleteRefreshTokenCookie();
 
         var accessToken = user.GenerateJWT();
         var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate(
@@ -119,5 +121,41 @@ public class AuthController : ControllerBase
         HttpContext.Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
 
         return Ok(new TokenResponse(accessToken));
+    }
+
+    [Authorize]
+    [HttpPost]
+    [Route("logout")]
+    public IActionResult Logout()
+    {
+        bool hasRefreshToken = HttpContext.Request.Cookies
+            .TryGetValue("refreshToken", out string? currentRefreshTokenId);
+
+        if (!hasRefreshToken)
+        {
+            return BadRequest();
+        }
+
+        var currentRefreshToken = _refreshTokenService.GetRefreshToken(currentRefreshTokenId);
+
+        _refreshTokenService.RemoveRefreshToken(currentRefreshToken);
+
+        DeleteRefreshTokenCookie();
+
+        return Ok();
+    }
+
+    private void DeleteRefreshTokenCookie()
+    {
+        var cookieOptions = new CookieOptions()
+        {
+            HttpOnly = true,
+            MaxAge = TimeSpan.Zero,
+            Expires = DateTime.Now.AddDays(-1),
+            Path = "/api/v1/auth"
+        };
+
+        HttpContext.Response.Cookies
+            .Delete("refreshToken", cookieOptions);
     }
 }
