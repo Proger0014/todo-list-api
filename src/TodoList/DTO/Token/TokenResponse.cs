@@ -6,13 +6,10 @@ public class TokenResponse
 {
     [JsonPropertyName("access_token")]
     public string AccessToken { get; set; }
-    [JsonPropertyName("refresh_token")]
-    public string RefreshToken { get; set; }
 
-    public TokenResponse(string accessToken, string refreshToken)
+    public TokenResponse(string accessToken)
     {
         AccessToken = accessToken;
-        RefreshToken = refreshToken;
     }
 
     public TokenResponse() { }

@@ -15,13 +15,26 @@ public class RefreshTokenService
 
 	public RefreshToken GetRefreshToken(string refreshToken)
 	{
-		return _refreshTokenRepository.GetByRefreshToken(refreshToken);
+		try
+		{
+			return _refreshTokenRepository.GetByRefreshToken(refreshToken);
+		} catch (Exception ex)
+		{
+			return null;
+		}
     }
 
 	public RefreshToken GetRefreshTokenByUserId(long userId)
 	{
-		return _refreshTokenRepository.GetByUserId(userId);
-	}
+		try
+		{
+            return _refreshTokenRepository.GetByUserId(userId);
+        } catch (Exception ex)
+		{
+			return null;
+		}
+
+    }
 
 	public string GenerateRefreshToken(RefreshTokenCreate refreshTokenCreate)
 	{

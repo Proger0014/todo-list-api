@@ -37,11 +37,14 @@ public class AuthController : ControllerBase
             return NotFound("User not found");
         }
 
-        try
+        var userLastRefreshToken = _refreshTokenService.GetRefreshTokenByUserId(user.Id);
+
+        if (userLastRefreshToken == null)
         {
-            var userLastRefreshToken = _refreshTokenService.GetRefreshTokenByUserId(user.Id);
-            _refreshTokenService.RemoveRefreshToken(userLastRefreshToken);
-        } catch (Exception) { }
+            return BadRequest();
+        }
+
+        _refreshTokenService.RemoveRefreshToken(userLastRefreshToken);
 
         var accessToken = user.GenerateJWT();
         var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate(
@@ -57,7 +60,7 @@ public class AuthController : ControllerBase
 
         HttpContext.Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
 
-        return Ok(new TokenResponse(accessToken, refreshToken));
+        return Ok(new TokenResponse(accessToken));
 
     }
 
@@ -83,11 +86,16 @@ public class AuthController : ControllerBase
     public IActionResult RefreshToken()
     {
         var currentRefreshTokenId = HttpContext.Request.Cookies["refreshToken"].ToString();
+
+        if (string.IsNullOrEmpty(currentRefreshTokenId))
+        {
+            return BadRequest();
+        }
+
         var currentRefreshToken = _refreshTokenService.GetRefreshToken(currentRefreshTokenId);
         var user = _userService.GetUserById(currentRefreshToken.UserId);
 
-        if (currentRefreshTokenId == null ||
-            currentRefreshToken == null ||
+        if (currentRefreshToken == null ||
             currentRefreshToken.IsRevorked())
         {
             return BadRequest();
@@ -110,6 +118,6 @@ public class AuthController : ControllerBase
 
         HttpContext.Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
 
-        return Ok(new TokenResponse(accessToken, refreshToken));
+        return Ok(new TokenResponse(accessToken));
     }
 }
