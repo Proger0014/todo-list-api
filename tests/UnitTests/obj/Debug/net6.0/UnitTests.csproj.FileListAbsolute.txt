@@ -131,3 +131,4 @@ C:\ProgramRepo\C#\#Projects\todo-list-api\tests\UnitTests\obj\Debug\net6.0\refin
 C:\ProgramRepo\C#\#Projects\todo-list-api\tests\UnitTests\obj\Debug\net6.0\UnitTests.pdb
 C:\ProgramRepo\C#\#Projects\todo-list-api\tests\UnitTests\obj\Debug\net6.0\UnitTests.genruntimeconfig.cache
 C:\ProgramRepo\C#\#Projects\todo-list-api\tests\UnitTests\obj\Debug\net6.0\ref\UnitTests.dll
+C:\ProgramRepo\C#\#Projects\todo-list-api\tests\UnitTests\bin\Debug\net6.0\Properties\launchSettings.json

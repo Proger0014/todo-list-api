@@ -17,14 +17,14 @@ public class CommonExtensionsTests
     public void GetConnectionString_NotExistsConnectionString_ThrowsKeyNotFoundException()
     {
         string connectionName = "someConnectionString";
-        Assert.Throws<KeyNotFoundException>(connectionName.GetConnectionString);
+        Assert.Throws<KeyNotFoundException>(() => { connectionName.GetConnectionString(); });
     }
 
     [Fact]
     public void GetAppSetting_ExistsAppSetting_GetString()
     {
         var expected = "my_super_secret_key_1";
-        var actual = "Jwt:Key".GetAppSetting();
+        var actual = "Jwt:Key".GetSetting(CommonExtensions.Setting.Dev);
 
         Assert.Equal(expected, actual);
     }
@@ -33,6 +33,6 @@ public class CommonExtensionsTests
     public void GetAppSetting_NotExistsAppSetting_ThrowsKeyNotFoundException()
     {
         string someAppSettingKey = "someAppSettingKey";
-        Assert.Throws<KeyNotFoundException>(someAppSettingKey.GetAppSetting);
+        Assert.Throws<KeyNotFoundException>(() => { someAppSettingKey.GetSetting(CommonExtensions.Setting.Dev); });
     }
 }

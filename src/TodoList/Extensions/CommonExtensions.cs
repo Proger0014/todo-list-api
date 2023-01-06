@@ -1,30 +1,41 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using TodoList.Models.User;
-
-namespace TodoList.Extensions;
+﻿namespace TodoList.Extensions;
 
 public static class CommonExtensions
 {
-    public static string GetAppSetting(this string key)
+    public static string GetSetting(this string key, Setting env)
     {
-        var configuration = AppSettingsConfigurationInit();
+        var configuration = SettingsConfigurationInit(env);
 
         var value = configuration[key];
 
         if (string.IsNullOrEmpty(value))
         {
-            throw new KeyNotFoundException("Key is not found in appsettings");
+            throw new KeyNotFoundException("Key is not found in sttings file");
         }
 
         return value;
     }
 
-    public static string GetConnectionString(this string connectionName)
+    public static Setting GetEnvironment()
     {
-        var configuration = AppSettingsConfigurationInit();
+        var env = "profiles:TodoList:environmentVariables:ASPNETCORE_ENVIRONMENT".GetSetting(Setting.LauchSettings);
+
+        return env switch
+        {
+            "Development" => Setting.Dev,
+            "Release" or "Production" => Setting.Release,
+            _ => Setting.Default
+        };
+    }
+
+    public static string GetConnectionString(this string connectionName, Setting setting = Setting.LauchSettings)
+    {
+        if (setting == Setting.LauchSettings)
+        {
+            setting = GetEnvironment();
+        }
+        
+        var configuration = setting.SettingsConfigurationInit();
 
         var connectionString = configuration.GetConnectionString(connectionName);
 
@@ -36,11 +47,34 @@ public static class CommonExtensions
         return connectionString;
     }
 
-    private static IConfiguration AppSettingsConfigurationInit()
+    private static IConfiguration SettingsConfigurationInit(this Setting setting)
     {
         return new ConfigurationBuilder()
             .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-            .AddJsonFile("appsettings.json")
+            .AddJsonFile(setting.GetSettingName())
             .Build();
+    }
+
+    private static string GetSettingName(this Setting setting)
+    {
+        return EnvironmentAppsettings[setting];
+    }
+
+    private static Dictionary<Setting, string> EnvironmentAppsettings = new()
+    {
+        { Setting.Default, "appsettings.json"},
+        { Setting.Dev, "appsettings.Development.json" },
+        { Setting.Release, "appsettings.Release.json" },
+        { Setting.Test, "appsettings.Test.json" },
+        { Setting.LauchSettings, "Properties/launchSettings.json" }
+    };
+
+    public enum Setting
+    {
+        Default,
+        Dev,
+        Release,
+        Test,
+        LauchSettings
     }
 }

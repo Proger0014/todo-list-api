@@ -11,6 +11,10 @@
     <Content Remove="Config\**" />
     <EmbeddedResource Remove="Config\**" />
     <None Remove="Config\**" />
+	  
+	<None Update="Properties/launchSettings.json">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
   </ItemGroup>
 
   <ItemGroup>

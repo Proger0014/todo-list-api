@@ -4,9 +4,6 @@ using TodoList.Services;
 using TodoList.DTO.User;
 using TodoList.DTO.Token;
 using TodoList.Extensions;
-using TodoList.Models.RefreshToken;
-using System.Net;
-using Microsoft.AspNetCore.Http;
 
 namespace TodoList.Controllers;
 
@@ -141,7 +138,7 @@ public class AuthController : ControllerBase
         _refreshTokenService.RemoveRefreshToken(currentRefreshToken);
 
         DeleteRefreshTokenCookie();
-
+            
         return Ok();
     }
 

@@ -24,5 +24,11 @@ public class User
         Password = password;
     }
 
-    public User() { }
+    public User() 
+    {
+        Id = 0;
+        Nickname = "";
+        Login = "";
+        Password = "";
+    }
 }
