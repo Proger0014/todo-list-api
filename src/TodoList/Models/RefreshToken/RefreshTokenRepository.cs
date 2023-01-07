@@ -1,24 +1,17 @@
+using TodoList.Models.Base;
+
 namespace TodoList.Models.RefreshToken;
 
-public class RefreshTokenRepository
+public class RefreshTokenRepository :
+    BaseRepository<RefreshToken>,
+    IRefreshTokenRepository 
 {
     private ApplicationContext _context;
 
     public RefreshTokenRepository(ApplicationContext context)
+        : base(context)
     {
         _context = context;
-    }
-
-    public RefreshToken GetByRefreshToken(string refreshToken)
-    {
-        var rf = _context.RefreshTokens.SingleOrDefault(rt => rt.Token == refreshToken);
-
-        if (rf == null)
-        {
-            throw new Exception("Not found refresh token");
-        }
-
-        return rf;
     }
 
     public RefreshToken GetByUserId(long userId)
@@ -31,17 +24,5 @@ public class RefreshTokenRepository
         }
 
         return rf;
-    }
-
-    public void AddRefreshToken(RefreshToken refreshToken)
-    {
-        _context.RefreshTokens.Add(refreshToken);
-        _context.SaveChanges();
-    }
-
-    public void RemoveRefreshToken(RefreshToken refreshToken)
-    {
-        _context.RefreshTokens.Remove(refreshToken);
-        _context.SaveChanges();
     }
 }

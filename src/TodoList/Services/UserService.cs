@@ -14,17 +14,17 @@ public class UserService
 
 	public User? GetUserById(long id)
 	{
-		return _userRepository.GetUserById(id);
+		return _userRepository.GetById(id);
 	}
 
-	public User? GetUserByLogin(UserLogin login)
+	public User? GetUserByLogin(UserLogin userLogin)
 	{
-		return _userRepository.GetUserByLogin(login);
+		return _userRepository.GetByUserLogin(userLogin);
 	}
 
 	public void AddUser(UserRegister register)
 	{
-		var userWithSameLogin = _userRepository.GetUsers()
+		var userWithSameLogin = _userRepository.GetAll()
 			.FirstOrDefault(u => u.Login == register.Login);
 
 		if (userWithSameLogin != null)
@@ -39,6 +39,6 @@ public class UserService
 			register.Password
 		);
 
-		_userRepository.AddUser(user);
+		_userRepository.Insert(user);
 	}
 }

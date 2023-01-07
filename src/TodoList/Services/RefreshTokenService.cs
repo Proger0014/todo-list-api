@@ -1,6 +1,5 @@
 using TodoList.DTO.Token;
 using TodoList.Models.RefreshToken;
-using TodoList.Models.User;
 
 namespace TodoList.Services;
 
@@ -17,8 +16,8 @@ public class RefreshTokenService
 	{
 		try
 		{
-			return _refreshTokenRepository.GetByRefreshToken(refreshToken);
-		} catch (Exception ex)
+			return _refreshTokenRepository.GetById(refreshToken);
+		} catch (Exception)
 		{
 			return null;
 		}
@@ -29,7 +28,7 @@ public class RefreshTokenService
 		try
 		{
             return _refreshTokenRepository.GetByUserId(userId);
-        } catch (Exception ex)
+        } catch (Exception)
 		{
 			return null;
 		}
@@ -45,13 +44,13 @@ public class RefreshTokenService
 			DateTime.Now,
 			DateTime.Now.Add(TimeSpan.FromMinutes(10)));
 
-		_refreshTokenRepository.AddRefreshToken(token);
+		_refreshTokenRepository.Insert(token);
 
 		return token.Token;
 	}
 
 	public void RemoveRefreshToken(RefreshToken refreshToken)
 	{
-		_refreshTokenRepository.RemoveRefreshToken(refreshToken);
+		_refreshTokenRepository.Delete(refreshToken.Token);
 	}
 }

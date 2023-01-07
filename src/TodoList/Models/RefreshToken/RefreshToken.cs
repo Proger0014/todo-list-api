@@ -40,4 +40,22 @@ public class RefreshToken
 
         return false;
     }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj == null) return false;
+        if ((RefreshToken)obj == this) return true;
+        var refreshToken = (RefreshToken)obj;
+
+        if (Token == refreshToken.Token &&
+            UserId == refreshToken.UserId &&
+            FingerPrint == refreshToken.FingerPrint &&
+            AddedTime == refreshToken.AddedTime &&
+            ExpirationTime == refreshToken.ExpirationTime)
+        {
+            return true;
+        }
+
+        return false;
+    }
 }
