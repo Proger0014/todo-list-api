@@ -1,30 +1,23 @@
-using TodoList.DTO.User;
 using TodoList.Models.Base;
 
 namespace TodoList.Models.User;
 
 public class UserRepository :
-    BaseRepository<User>,
+    BaseRepository<User, long>,
     IUserRepository
 {
-    private ApplicationContext _context;
+    public UserRepository(ApplicationDBContext context)
+        : base(context) { }
 
-    public UserRepository(ApplicationContext context)
-        : base(context)
+    public User? GetByUserLogin(string login, string password)
     {
-        _context = context;
+        return _context.Users
+            .SingleOrDefault(u => u.Login == login && u.Password == password);
     }
 
-    public User GetByUserLogin(UserLogin userLogin)
+    public User? GetByUserLogin(string login)
     {
-        var targetUser = _context.Users
-            .SingleOrDefault(u => u.Login == userLogin.Login && u.Password == userLogin.Password);
-
-        if (targetUser == null)
-        {
-            throw new Exception("entity not found");
-        }
-
-        return targetUser;
+        return _context.Users
+            .SingleOrDefault(u => u.Login == login);
     }
 }

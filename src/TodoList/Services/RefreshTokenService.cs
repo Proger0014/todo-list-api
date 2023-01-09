@@ -5,52 +5,56 @@ namespace TodoList.Services;
 
 public class RefreshTokenService
 {
-    private RefreshTokenRepository _refreshTokenRepository;
+    private IRefreshTokenRepository _refreshTokenRepository;
 
-	public RefreshTokenService(RefreshTokenRepository refreshTokenRepository)
-	{
-		_refreshTokenRepository = refreshTokenRepository;
-	}
-
-	public RefreshToken GetRefreshToken(string refreshToken)
-	{
-		try
-		{
-			return _refreshTokenRepository.GetById(refreshToken);
-		} catch (Exception)
-		{
-			return null;
-		}
+    public RefreshTokenService(IRefreshTokenRepository refreshTokenRepository)
+    {
+        _refreshTokenRepository = refreshTokenRepository;
     }
 
-	public RefreshToken GetRefreshTokenByUserId(long userId)
-	{
-		try
-		{
+    public RefreshToken GetRefreshToken(string refreshToken)
+    {
+        try
+        {
+            return _refreshTokenRepository.GetById(Guid.Parse(refreshToken));
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    public RefreshToken GetRefreshTokenByUserId(long userId)
+    {
+        try
+        {
             return _refreshTokenRepository.GetByUserId(userId);
-        } catch (Exception)
-		{
-			return null;
-		}
+        }
+        catch (Exception)
+        {
+            return null;
+        }
 
     }
 
-	public string GenerateRefreshToken(RefreshTokenCreate refreshTokenCreate)
-	{
-		var token = new RefreshToken(
-            Guid.NewGuid().ToString(),
-			refreshTokenCreate.UserId,
-			refreshTokenCreate.FingerPrint,
-			DateTime.Now,
-			DateTime.Now.Add(TimeSpan.FromMinutes(10)));
+    public string GenerateRefreshToken(RefreshTokenCreate refreshTokenCreate)
+    {
+        var token = new RefreshToken()
+        {
+            Id = Guid.NewGuid(),
+            UserId = refreshTokenCreate.UserId,
+            FingerPrint = refreshTokenCreate.FingerPrint,
+            AddedTime = DateTime.Now,
+            ExpirationTime = DateTime.Now.Add(TimeSpan.FromMinutes(10))
+        };
 
-		_refreshTokenRepository.Insert(token);
+        _refreshTokenRepository.Insert(token);
 
-		return token.Token;
-	}
+        return token.Id.ToString();
+    }
 
-	public void RemoveRefreshToken(RefreshToken refreshToken)
-	{
-		_refreshTokenRepository.Delete(refreshToken.Token);
-	}
+    public void RemoveRefreshToken(RefreshToken refreshToken)
+    {
+        _refreshTokenRepository.Delete(refreshToken.Id);
+    }
 }

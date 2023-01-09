@@ -4,19 +4,20 @@ using TodoList.Services;
 using TodoList.DTO.User;
 using TodoList.DTO.Token;
 using TodoList.Extensions;
+using TodoList.Utils;
 
 namespace TodoList.Controllers;
 
 [ApiController]
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/auth")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class AuthController : ControllerBase
 {
     private UserService _userService;
     private RefreshTokenService _refreshTokenService;
 
     public AuthController(
-        UserService userService, 
+        UserService userService,
         RefreshTokenService refreshTokenService)
     {
         _userService = userService;
@@ -25,9 +26,8 @@ public class AuthController : ControllerBase
 
 
     [AllowAnonymous]
-    [HttpPost]
-    [Route("login")]
-    public IActionResult Login([FromBody] UserLogin login)
+    [HttpPost("login")]
+    public IActionResult Login([FromBody] UserLoginRequest login)
     {
         var user = _userService.GetUserByLogin(login);
 
@@ -43,44 +43,40 @@ public class AuthController : ControllerBase
             _refreshTokenService.RemoveRefreshToken(userLastRefreshToken);
         }
 
-
         var accessToken = user.GenerateJWT();
         var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate(
             user.Id,
             HttpContext.Request.Headers["User-Agent"].ToString()));
 
-        var cookieOptions = new CookieOptions()
+        HttpContext.Response.Cookies.Append("refreshToken", refreshToken, CommonCookieOptions.Default);
+
+        return Ok(new TokenResponse()
         {
-            HttpOnly = true,
-            MaxAge = TimeSpan.FromMinutes(20),
-            Path = "/api/v1/auth"
-        };
-
-        HttpContext.Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
-
-        return Ok(new TokenResponse(accessToken));
+            AccessToken = accessToken
+        });
 
     }
 
     [AllowAnonymous]
-    [HttpPost]
-    [Route("register")]
-    public IActionResult Register([FromBody] UserRegister register)
+    [HttpPost("register")]
+    public IActionResult Register([FromBody] UserRegisterRequest register)
     {
-        try 
+        try
         {
             _userService.AddUser(register);
             return Ok();
-        } 
+        }
         catch (Exception)
         {
             return BadRequest();
         }
     }
 
+    /**
+     * Почему для всех? если рефреш токен истечет, то я все равно смогу сделать рефреш токен
+     */
     [AllowAnonymous]
-    [HttpPost]
-    [Route("refresh-token")]
+    [HttpPost("refresh-token")]
     public IActionResult RefreshToken()
     {
         bool hasRefreshToken = HttpContext.Request.Cookies
@@ -108,21 +104,16 @@ public class AuthController : ControllerBase
             user.Id,
             HttpContext.Request.Headers["User-Agent"].ToString()));
 
-        var cookieOptions = new CookieOptions()
+        HttpContext.Response.Cookies.Append("refreshToken", refreshToken, CommonCookieOptions.Default);
+
+        return Ok(new TokenResponse()
         {
-            HttpOnly = true,
-            MaxAge = TimeSpan.FromMinutes(20),
-            Path = "/api/v1/auth"
-        };
-
-        HttpContext.Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
-
-        return Ok(new TokenResponse(accessToken));
+            AccessToken = accessToken
+        });
     }
 
     [Authorize]
-    [HttpPost]
-    [Route("logout")]
+    [HttpPost("logout")]
     public IActionResult Logout()
     {
         bool hasRefreshToken = HttpContext.Request.Cookies
@@ -138,21 +129,13 @@ public class AuthController : ControllerBase
         _refreshTokenService.RemoveRefreshToken(currentRefreshToken);
 
         DeleteRefreshTokenCookie();
-            
+
         return Ok();
     }
 
     private void DeleteRefreshTokenCookie()
     {
-        var cookieOptions = new CookieOptions()
-        {
-            HttpOnly = true,
-            MaxAge = TimeSpan.Zero,
-            Expires = DateTime.Now.AddDays(-1),
-            Path = "/api/v1/auth"
-        };
-
         HttpContext.Response.Cookies
-            .Delete("refreshToken", cookieOptions);
+            .Delete("refreshToken", CommonCookieOptions.Delete);
     }
 }

@@ -1,25 +1,23 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TodoList.Models.Id;
 
 namespace TodoList.Models.User;
 
 [Table("users", Schema = "public")]
-public class User
+public class User : ID<long>
 {
     [Key, Column("id"), DataType("bigserial")]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
-    [Column("nick_name")]
-    public string Nickname { get; set; }
-    [Column("login")]
+    public string NickName { get; set; }
     public string Login { get; set; }
-    [Column("password")]
     public string Password { get; set; }
 
     public User(long id, string nickname, string login, string password)
     {
         Id = id;
-        Nickname = nickname;
+        NickName = nickname;
         Login = login;
         Password = password;
     }
@@ -27,7 +25,7 @@ public class User
     public User() 
     {
         Id = 0;
-        Nickname = "";
+        NickName = "";
         Login = "";
         Password = "";
     }

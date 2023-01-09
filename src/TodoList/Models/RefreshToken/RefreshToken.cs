@@ -1,28 +1,25 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TodoList.Models.Id;
 
 namespace TodoList.Models.RefreshToken;
 
-public class RefreshToken
+public class RefreshToken : ID<Guid>
 {
-    [Key, Column("token")]
-    public string Token { get; set; }
-    [Column("finger_print")]
+    [Key]
+    public Guid Id { get; set; }
     public string FingerPrint { get; set; }
-    [Column("user_id")]
     public long UserId { get; set; }
-    [Column("added_time")]
     public DateTime AddedTime { get; set; }
-    [Column("expiration_time")]
     public DateTime ExpirationTime { get; set; }
 
     public RefreshToken(
-        string token, long userId,
+        Guid id, long userId,
         string fingerPrint,
         DateTime addedTime,
         DateTime expirationTime)
     {
-        Token = token;
+        Id = id;
         UserId = userId;
         FingerPrint = fingerPrint;
         AddedTime = addedTime;
@@ -33,12 +30,7 @@ public class RefreshToken
 
     public bool IsRevorked()
     {
-        if (DateTime.Now > ExpirationTime)
-        {
-            return true;
-        }
-
-        return false;
+        return DateTime.Now > ExpirationTime;
     }
 
     public override bool Equals(object? obj)
@@ -47,7 +39,7 @@ public class RefreshToken
         if ((RefreshToken)obj == this) return true;
         var refreshToken = (RefreshToken)obj;
 
-        if (Token == refreshToken.Token &&
+        if (Id == refreshToken.Id &&
             UserId == refreshToken.UserId &&
             FingerPrint == refreshToken.FingerPrint &&
             AddedTime == refreshToken.AddedTime &&

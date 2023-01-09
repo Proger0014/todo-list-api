@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace TodoList.DTO.User;
 
-public class UserLogin
+public class UserLoginRequest
 {
     [JsonPropertyName("login")]
     public string Login { get; set; }

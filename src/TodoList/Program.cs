@@ -1,19 +1,24 @@
 using TodoList.Models.User;
+using Microsoft.EntityFrameworkCore;
 using TodoList.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using TodoList.Models.RefreshToken;
+using TodoList;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddSingleton<ApplicationContext>();
-builder.Services.AddSingleton<UserRepository>();
-builder.Services.AddSingleton<UserService>();
-builder.Services.AddSingleton<RefreshTokenRepository>();
-builder.Services.AddSingleton<RefreshTokenService>();
+builder.Services.AddDbContext<ApplicationDBContext>(options => 
+    options
+        .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+        .UseSnakeCaseNamingConvention());
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<RefreshTokenService>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // схема аутентификации с помощью jwt токенов
@@ -37,6 +42,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // с
             ClockSkew = TimeSpan.Zero
         };
     }); // подключение этой аутентификации
+
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 builder.Services.AddApiVersioning();
 

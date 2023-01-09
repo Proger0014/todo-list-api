@@ -17,7 +17,7 @@ public static class TokensExtension
 
         var claims = new[]
         {
-            new Claim("name", user.Nickname),
+            new Claim("name", user.NickName),
         };
 
         var token = new JwtSecurityToken(
