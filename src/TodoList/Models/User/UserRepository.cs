@@ -11,13 +11,13 @@ public class UserRepository :
 
     public User? GetByUserLogin(string login, string password)
     {
-        return _context.Users
+        return _context.Users?
             .SingleOrDefault(u => u.Login == login && u.Password == password);
     }
 
     public User? GetByUserLogin(string login)
     {
-        return _context.Users
+        return _context.Users?
             .SingleOrDefault(u => u.Login == login);
     }
 }

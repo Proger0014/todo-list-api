@@ -10,5 +10,5 @@ public interface IRefreshTokenRepository :
     IBaseRepository<RefreshToken, Guid>.Save,
     IBaseRepository<RefreshToken, Guid>.Update
 {
-    RefreshToken GetByUserId(long id);
+    RefreshToken? GetByUserId(long id);
 }

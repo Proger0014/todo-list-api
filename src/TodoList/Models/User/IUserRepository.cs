@@ -8,6 +8,6 @@ public interface IUserRepository :
     IBaseRepository<User, long>.Insert,
     IBaseRepository<User, long>.Save
 {
-    User GetByUserLogin(string login, string password);
-    User GetByUserLogin(string login);
+    User? GetByUserLogin(string login, string password);
+    User? GetByUserLogin(string login);
 }

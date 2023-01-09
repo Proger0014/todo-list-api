@@ -134,3 +134,6 @@ C:\ProgramRepo\C#\#Projects\todo-list-api\tests\UnitTests\obj\Debug\net6.0\ref\U
 C:\ProgramRepo\C#\#Projects\todo-list-api\tests\UnitTests\bin\Debug\net6.0\Properties\launchSettings.json
 C:\ProgramRepo\C#\#Projects\todo-list-api\tests\UnitTests\bin\Debug\net6.0\Castle.Core.dll
 C:\ProgramRepo\C#\#Projects\todo-list-api\tests\UnitTests\bin\Debug\net6.0\Moq.dll
+C:\ProgramRepo\C#\#Projects\todo-list-api\tests\UnitTests\bin\Debug\net6.0\EFCore.NamingConventions.dll
+C:\ProgramRepo\C#\#Projects\todo-list-api\tests\UnitTests\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Relational.Design.dll
+C:\ProgramRepo\C#\#Projects\todo-list-api\tests\UnitTests\bin\Debug\net6.0\Npgsql.EntityFrameworkCore.PostgreSQL.Design.dll

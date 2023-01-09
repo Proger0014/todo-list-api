@@ -26,7 +26,14 @@ public class RefreshToken : ID<Guid>
         ExpirationTime = expirationTime;
     }
 
-    public RefreshToken() { }
+    public RefreshToken()
+    {
+        Id = Guid.Empty;
+        UserId = -1;
+        FingerPrint = "";
+        AddedTime = DateTime.Now;
+        ExpirationTime = DateTime.Now;
+    }
 
     public bool IsRevorked()
     {
@@ -49,5 +56,10 @@ public class RefreshToken : ID<Guid>
         }
 
         return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
     }
 }

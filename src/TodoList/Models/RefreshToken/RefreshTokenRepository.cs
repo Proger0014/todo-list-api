@@ -11,7 +11,7 @@ public class RefreshTokenRepository :
 
     public RefreshToken? GetByUserId(long userId)
     {
-        return _context.RefreshTokens
+        return _context.RefreshTokens?
             .SingleOrDefault(rt => rt.UserId == userId);
     }
 }

@@ -26,15 +26,7 @@ public class RefreshTokenService
 
     public RefreshToken GetRefreshTokenByUserId(long userId)
     {
-        try
-        {
-            return _refreshTokenRepository.GetByUserId(userId);
-        }
-        catch (Exception)
-        {
-            return null;
-        }
-
+        return _refreshTokenRepository.GetByUserId(userId);
     }
 
     public string GenerateRefreshToken(RefreshTokenCreate refreshTokenCreate)
