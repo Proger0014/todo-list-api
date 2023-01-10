@@ -8,7 +8,7 @@ namespace TodoList;
 public class ApplicationDBContext : DbContext
 {
     public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options)
-    : base(options)
+        : base(options)
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }
