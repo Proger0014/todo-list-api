@@ -10,4 +10,11 @@ public class UserRegisterRequest
     public string Login { get; set; }
     [JsonPropertyName("password")]
     public string Password { get; set; }
+
+    public UserRegisterRequest()
+    {
+        Nickname = string.Empty;
+        Login = string.Empty;
+        Password = string.Empty;
+    }
 }

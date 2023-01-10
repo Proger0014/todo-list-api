@@ -1,5 +1,6 @@
 using TodoList.DTO.User;
 using TodoList.Models.User;
+using TodoList.Exceptions;
 
 namespace TodoList.Services;
 
@@ -12,14 +13,28 @@ public class UserService
         _userRepository = userRepository;
     }
 
-    public User? GetUserById(long id)
+    public User GetUserById(long id)
     {
-        return _userRepository.GetById(id);
+        var existsUser = _userRepository.GetById(id);
+
+        if (existsUser == null)
+        {
+            throw new NotFoundException("User not found");
+        }
+
+        return existsUser;
     }
 
-    public User? GetUserByLogin(UserLoginRequest userLogin)
+    public User GetUserByLogin(UserLoginRequest userLogin)
     {
-        return _userRepository.GetByUserLogin(userLogin.Login, userLogin.Password);
+        var existsUser = _userRepository.GetByUserLogin(userLogin.Login, userLogin.Password);
+
+        if (existsUser == null)
+        {
+            throw new NotFoundException("User not found");
+        }
+
+        return existsUser;
     }
 
     public void AddUser(UserRegisterRequest register)
@@ -29,7 +44,7 @@ public class UserService
 
         if (existsUserWithSameNickname != null)
         {
-			throw new Exception("This user is exists");
+            throw new ExistsException("This user is exists");
         }
 
         var user = new User(

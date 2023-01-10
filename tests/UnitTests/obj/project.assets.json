@@ -7781,11 +7781,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\ProgramRepo\\C#\\#Projects\\todo-list-api\\tests\\UnitTests\\UnitTests.csproj",
+      "projectUniqueName": "C:\\ProgramRepo\\C#\\#Projects\\todo-list-api\\tests\\UnitTests\\UnitTests.csproj",
       "projectName": "UnitTests",
-      "projectPath": "c:\\ProgramRepo\\C#\\#Projects\\todo-list-api\\tests\\UnitTests\\UnitTests.csproj",
+      "projectPath": "C:\\ProgramRepo\\C#\\#Projects\\todo-list-api\\tests\\UnitTests\\UnitTests.csproj",
       "packagesPath": "C:\\Users\\iakov\\.nuget\\packages\\",
-      "outputPath": "c:\\ProgramRepo\\C#\\#Projects\\todo-list-api\\tests\\UnitTests\\obj\\",
+      "outputPath": "C:\\ProgramRepo\\C#\\#Projects\\todo-list-api\\tests\\UnitTests\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\iakov\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -7802,8 +7802,8 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "c:\\ProgramRepo\\C#\\#Projects\\todo-list-api\\src\\TodoList\\TodoList.csproj": {
-              "projectPath": "c:\\ProgramRepo\\C#\\#Projects\\todo-list-api\\src\\TodoList\\TodoList.csproj"
+            "C:\\ProgramRepo\\C#\\#Projects\\todo-list-api\\src\\TodoList\\TodoList.csproj": {
+              "projectPath": "C:\\ProgramRepo\\C#\\#Projects\\todo-list-api\\src\\TodoList\\TodoList.csproj"
             }
           }
         }

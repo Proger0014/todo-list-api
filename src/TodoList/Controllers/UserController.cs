@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using TodoList.DTO.User;
+using TodoList.Exceptions;
 using TodoList.Models.User;
 using TodoList.Services;
 
@@ -26,25 +26,21 @@ public class UserController : ControllerBase
     {
         var user = _userService.GetUserById(id);
 
-        if (user == null) 
-        {
-            return NotFound();
-        }
-
         var identity = HttpContext.User.Identity;
 
-        if (identity != null)
+        if (identity != null &&
+            user != null)
         {
-            var userClaims = ((ClaimsIdentity) identity).Claims;
+            var userClaims = ((ClaimsIdentity)identity).Claims;
 
             return Ok(
                 new User(
                     user.Id,
-                    userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Name)?.Value,
+                    userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Name)!.Value,
                     user.Login,
                     user.Password));
         }
 
-        return NotFound();
+        throw new NotFoundException("User not found");
     }
 }

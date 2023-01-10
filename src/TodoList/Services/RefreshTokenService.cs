@@ -1,5 +1,6 @@
 using TodoList.DTO.Token;
 using TodoList.Models.RefreshToken;
+using TodoList.Exceptions;
 
 namespace TodoList.Services;
 
@@ -14,19 +15,26 @@ public class RefreshTokenService
 
     public RefreshToken GetRefreshToken(string refreshToken)
     {
-        try
+        var existsRefreshToken = _refreshTokenRepository.GetById(Guid.Parse(refreshToken));
+
+        if (existsRefreshToken == null)
         {
-            return _refreshTokenRepository.GetById(Guid.Parse(refreshToken));
+            throw new NotFoundException("RefreshToken not found");
         }
-        catch (Exception)
-        {
-            return null;
-        }
+
+        return existsRefreshToken;
     }
 
     public RefreshToken GetRefreshTokenByUserId(long userId)
     {
-        return _refreshTokenRepository.GetByUserId(userId);
+        var existsUser = _refreshTokenRepository.GetByUserId(userId);
+
+        if (existsUser == null)
+        {
+            throw new NotFoundException("RefreshToken not found");
+        }
+
+        return existsUser;
     }
 
     public string GenerateRefreshToken(RefreshTokenCreate refreshTokenCreate)

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "29x/W3djinTq05LVidUeDw+d2Fg+qqTNeAlBQIiN10uG4IslORcSOeb/cPa070at6KkhHUwYBfNLHB9D54XiaQ==",
+  "dgSpecHash": "vkXh3gQAsPgRgOH52xwdNEgwBOE/eNzwV0HB2pYgSmEO3rjrlpjQO+vWVe9oT788crh4MNflKQt4WQ7DlIXSlg==",
   "success": true,
-  "projectFilePath": "c:\\ProgramRepo\\C#\\#Projects\\todo-list-api\\tests\\UnitTests\\UnitTests.csproj",
+  "projectFilePath": "C:\\ProgramRepo\\C#\\#Projects\\todo-list-api\\tests\\UnitTests\\UnitTests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\iakov\\.nuget\\packages\\castle.core\\5.1.1\\castle.core.5.1.1.nupkg.sha512",
     "C:\\Users\\iakov\\.nuget\\packages\\coverlet.collector\\3.1.2\\coverlet.collector.3.1.2.nupkg.sha512",

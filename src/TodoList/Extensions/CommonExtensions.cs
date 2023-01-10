@@ -1,4 +1,8 @@
-﻿namespace TodoList.Extensions;
+﻿using System.Text.RegularExpressions;
+using System.Net;
+using TodoList.Constants;
+
+namespace TodoList.Extensions;
 
 public static class CommonExtensions
 {
@@ -34,7 +38,7 @@ public static class CommonExtensions
         {
             setting = GetEnvironment();
         }
-        
+
         var configuration = setting.SettingsConfigurationInit();
 
         var connectionString = configuration.GetConnectionString(connectionName);
@@ -76,5 +80,17 @@ public static class CommonExtensions
         Release,
         Test,
         LauchSettings
+    }
+
+    public static string SplitCamelCase(this string input)
+    {
+        return Regex
+            .Replace(input, "([A-Z])", " $1", RegexOptions.Compiled)
+            .Trim();
+    }
+
+    public static string GetStatusTitle(this HttpStatusCode statusCode)
+    {
+        return HttpStatusCodeTitles.HttpStatusCodeTitlesSet[statusCode];
     }
 }

@@ -2,24 +2,18 @@ namespace TodoList.Utils;
 
 public static class CommonCookieOptions
 {
-    public static CookieOptions Default
+    public static CookieOptions Default => new()
     {
-        get => new CookieOptions()
-        {
-            HttpOnly = true,
-            MaxAge = TimeSpan.FromMinutes(20),
-            Path = "/api/v1/auth"
-        };
-    }
+        HttpOnly = true,
+        MaxAge = TimeSpan.FromMinutes(20),
+        Path = "/api/v1/auth"
+    };
 
-    public static CookieOptions Delete
+    public static CookieOptions Delete => new()
     {
-        get => new CookieOptions()
-        {
-            HttpOnly = true,
-            MaxAge = TimeSpan.Zero,
-            Expires = DateTime.Now.AddDays(-1),
-            Path = "/api/v1/auth"
-        };
-    }
+        HttpOnly = true,
+        MaxAge = TimeSpan.Zero,
+        Expires = DateTime.Now.AddDays(-1),
+        Path = "/api/v1/auth"
+    };
 }

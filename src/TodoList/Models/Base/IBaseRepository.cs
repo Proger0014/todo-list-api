@@ -15,16 +15,9 @@ public interface IBaseRepository<T, E>
     }
     public interface GetById : CommonProps<T, E>
     {
-        T GetById(E id)
+        T? GetById(E id)
         {
-            var existsEntity = _table.Find(id);
-
-            if (existsEntity == null)
-            {
-                throw new Exception("Entity not found");
-            }
-
-            return existsEntity;
+            return _table.Find(id);
         }
     }
     public interface Insert : CommonProps<T, E>
@@ -52,7 +45,7 @@ public interface IBaseRepository<T, E>
 
             if (existsEntity == null)
             {
-                throw new Exception("Entity not found");
+                return;
             }
 
             _table.Remove(existsEntity);

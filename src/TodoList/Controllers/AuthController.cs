@@ -5,6 +5,7 @@ using TodoList.DTO.User;
 using TodoList.DTO.Token;
 using TodoList.Extensions;
 using TodoList.Utils;
+using TodoList.Exceptions;
 
 namespace TodoList.Controllers;
 
@@ -24,29 +25,26 @@ public class AuthController : ControllerBase
         _refreshTokenService = refreshTokenService;
     }
 
-
     [AllowAnonymous]
     [HttpPost("login")]
     public IActionResult Login([FromBody] UserLoginRequest login)
     {
-        var user = _userService.GetUserByLogin(login);
 
-        if (user == null)
+        Models.User.User user = _userService.GetUserByLogin(login);
+
+        try
         {
-            return NotFound("User not found");
-        }
-
-        var userLastRefreshToken = _refreshTokenService.GetRefreshTokenByUserId(user.Id);
-
-        if (userLastRefreshToken != null)
-        {
+            var userLastRefreshToken = _refreshTokenService.GetRefreshTokenByUserId(user.Id);
             _refreshTokenService.RemoveRefreshToken(userLastRefreshToken);
         }
+        catch (Exception) { }
 
         var accessToken = user.GenerateJWT();
-        var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate(
-            user.Id,
-            HttpContext.Request.Headers["User-Agent"].ToString()));
+        var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate()
+        {
+            UserId = user.Id,
+            FingerPrint = HttpContext.Request.Headers["User-Agent"].ToString()
+        });
 
         HttpContext.Response.Cookies.Append("refreshToken", refreshToken, CommonCookieOptions.Default);
 
@@ -61,15 +59,9 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public IActionResult Register([FromBody] UserRegisterRequest register)
     {
-        try
-        {
-            _userService.AddUser(register);
-            return Ok();
-        }
-        catch (Exception)
-        {
-            return BadRequest();
-        }
+        _userService.AddUser(register);
+
+        return Ok();
     }
 
     /**
@@ -82,27 +74,29 @@ public class AuthController : ControllerBase
         bool hasRefreshToken = HttpContext.Request.Cookies
             .TryGetValue("refreshToken", out string? currentRefreshTokenId);
 
-        if (!hasRefreshToken)
+        if (!hasRefreshToken || string.IsNullOrEmpty(currentRefreshTokenId))
         {
-            return BadRequest();
+            throw new NotFoundException("not existing refresh token cookie");
         }
 
         var currentRefreshToken = _refreshTokenService.GetRefreshToken(currentRefreshTokenId);
-        var user = _userService.GetUserById(currentRefreshToken.UserId);
 
-        if (currentRefreshToken == null ||
-            currentRefreshToken.IsRevorked())
+        if (currentRefreshToken.IsRevorked())
         {
-            return BadRequest();
+            throw new TokenExpiredException("token expired");
         }
+
+        var user = _userService.GetUserById(currentRefreshToken.UserId);
 
         _refreshTokenService.RemoveRefreshToken(currentRefreshToken);
         DeleteRefreshTokenCookie();
 
         var accessToken = user.GenerateJWT();
-        var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate(
-            user.Id,
-            HttpContext.Request.Headers["User-Agent"].ToString()));
+        var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate()
+        {
+            UserId = user.Id,
+            FingerPrint = HttpContext.Request.Headers["User-Agent"].ToString()
+        });
 
         HttpContext.Response.Cookies.Append("refreshToken", refreshToken, CommonCookieOptions.Default);
 
@@ -119,9 +113,9 @@ public class AuthController : ControllerBase
         bool hasRefreshToken = HttpContext.Request.Cookies
             .TryGetValue("refreshToken", out string? currentRefreshTokenId);
 
-        if (!hasRefreshToken)
+        if (!hasRefreshToken || string.IsNullOrEmpty(currentRefreshTokenId))
         {
-            return BadRequest();
+            throw new NotFoundException("not existing refresh token cookie");
         }
 
         var currentRefreshToken = _refreshTokenService.GetRefreshToken(currentRefreshTokenId);

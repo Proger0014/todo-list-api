@@ -7,11 +7,12 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using TodoList.Models.RefreshToken;
 using TodoList;
+using TodoList.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<ApplicationDBContext>(options => 
+builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options
         .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
         .UseSnakeCaseNamingConvention());
@@ -84,7 +85,7 @@ builder.Services.AddSwaggerGen(c =>
             new string[] { }
         }
     });
-    
+
 });
 
 var app = builder.Build();
@@ -103,7 +104,10 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
 app.UseCookiePolicy();
+
+app.UseGlobalExceptionHandling();
 
 app.MapControllers();
 
