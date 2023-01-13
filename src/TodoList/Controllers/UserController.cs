@@ -4,6 +4,8 @@ using System.Security.Claims;
 using TodoList.Exceptions;
 using TodoList.Models.User;
 using TodoList.Services;
+using TodoList.Constants;
+using TodoList.DTO.User;
 
 namespace TodoList.Controllers;
 
@@ -20,27 +22,22 @@ public class UserController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet]
-    [Route("{id}")]
-    public IActionResult GetUserById(long id)
+    [HttpGet("{id}")]
+    public IActionResult GetUserByIdOwn(long id)
     {
-        var user = _userService.GetUserById(id);
+        var userIdentity = HttpContext.User.Identity;
 
-        var identity = HttpContext.User.Identity;
-
-        if (identity != null &&
-            user != null)
+        if (userIdentity == null)
         {
-            var userClaims = ((ClaimsIdentity)identity).Claims;
-
-            return Ok(
-                new User(
-                    user.Id,
-                    userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Name)!.Value,
-                    user.Login,
-                    user.Password));
+            throw new AccessDeniedException("Not authorize");
         }
 
-        throw new NotFoundException("User not found");
+        var user = _userService.GetUserWithAccessDeniedCheck(new UserAccessDeniedCheck()
+        {
+            UserClaims = ((ClaimsIdentity)userIdentity).Claims,
+            UserId = id
+        });
+
+        return Ok(user);
     }
 }

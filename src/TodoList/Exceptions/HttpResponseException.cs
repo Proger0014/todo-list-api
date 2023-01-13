@@ -7,9 +7,7 @@ public abstract class HttpResponseException : Exception
     public int StatusCode { get; set; }
 
     public HttpResponseException()
-    {
-        StatusCode = (int)HttpStatusCode.InternalServerError;
-    }
+        : this("") { }
 
     public HttpResponseException(string message)
         : base(message)
@@ -18,9 +16,7 @@ public abstract class HttpResponseException : Exception
     }
 
     public HttpResponseException(HttpStatusCode statusCode)
-    {
-        StatusCode = (int)statusCode;
-    }
+        : this(statusCode, "") { }
 
     public HttpResponseException(HttpStatusCode statusCode, string message)
         : base(message)

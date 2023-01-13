@@ -44,7 +44,7 @@ public class AuthController : ControllerBase
         {
             UserId = user.Id,
             FingerPrint = HttpContext.Request.Headers["User-Agent"].ToString()
-        });
+        }).Id.ToString();
 
         HttpContext.Response.Cookies.Append("refreshToken", refreshToken, CommonCookieOptions.Default);
 
@@ -86,6 +86,13 @@ public class AuthController : ControllerBase
             throw new TokenExpiredException("token expired");
         }
 
+        var userIdentity = HttpContext.User.Identity;
+
+        if (userIdentity == null)
+        {
+            throw new AccessDeniedException("Not authorize");
+        }
+
         var user = _userService.GetUserById(currentRefreshToken.UserId);
 
         _refreshTokenService.RemoveRefreshToken(currentRefreshToken);
@@ -96,7 +103,7 @@ public class AuthController : ControllerBase
         {
             UserId = user.Id,
             FingerPrint = HttpContext.Request.Headers["User-Agent"].ToString()
-        });
+        }).Id.ToString();
 
         HttpContext.Response.Cookies.Append("refreshToken", refreshToken, CommonCookieOptions.Default);
 

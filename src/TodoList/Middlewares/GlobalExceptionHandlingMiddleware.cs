@@ -27,6 +27,8 @@ public class GlobalExceptionHandlingMiddleware
             {
                 await context.Response
                     .WriteAsJsonAsync(new ErrorDetailMini((HttpStatusCode)e.StatusCode));
+
+                return;
             }
 
             await context.Response

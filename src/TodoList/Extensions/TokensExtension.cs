@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TodoList.Models.User;
+using TodoList.Constants;
 
 namespace TodoList.Extensions;
 
@@ -18,6 +19,7 @@ public static class TokensExtension
         var claims = new[]
         {
             new Claim("name", user.NickName),
+            new Claim(CustomClaimTypes.UserId, user.Id.ToString())
         };
 
         var token = new JwtSecurityToken(

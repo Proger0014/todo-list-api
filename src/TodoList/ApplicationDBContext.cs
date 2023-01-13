@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using TodoList.Extensions;
 using TodoList.Models.RefreshToken;
 using TodoList.Models.User;
 

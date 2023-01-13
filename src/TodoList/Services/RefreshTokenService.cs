@@ -37,7 +37,7 @@ public class RefreshTokenService
         return existsUser;
     }
 
-    public string GenerateRefreshToken(RefreshTokenCreate refreshTokenCreate)
+    public RefreshToken GenerateRefreshToken(RefreshTokenCreate refreshTokenCreate)
     {
         var token = new RefreshToken()
         {
@@ -50,7 +50,7 @@ public class RefreshTokenService
 
         _refreshTokenRepository.Insert(token);
 
-        return token.Id.ToString();
+        return token;
     }
 
     public void RemoveRefreshToken(RefreshToken refreshToken)

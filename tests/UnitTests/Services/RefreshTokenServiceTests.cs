@@ -1,12 +1,13 @@
 ﻿using Moq;
 using TodoList.Models.RefreshToken;
+using TodoList.DTO.Token;
 using TodoList.Services;
 
 namespace UnitTests.Services;
 
 public class RefreshTokenServiceTests
 {
-    private RefreshTokenService CreateMock()
+    private Mock<IRefreshTokenRepository> CreateMock()
     {
         var mock = new Mock<IRefreshTokenRepository>();
 
@@ -30,13 +31,13 @@ public class RefreshTokenServiceTests
         mock.Setup(rr => rr.GetByUserId(2))
             .Returns(refreshToken2);
 
-        return new RefreshTokenService(mock.Object);
+        return mock;
     }
 
     [Fact]
     public void GetRefreshToken_ByUserId_ReturnRefreshToken()
     {
-        var refreshTokenService = CreateMock();
+        var refreshTokenService = new RefreshTokenService(CreateMock().Object);
 
         var targetDate = new DateTime(2023, 1, 1);
 
@@ -49,15 +50,54 @@ public class RefreshTokenServiceTests
     [Fact]
     public void GetRefreshToken_ById_ReturnRefreshToken()
     {
-        var refreshTokenService = CreateMock();
+        var refreshTokenService = new RefreshTokenService(CreateMock().Object);
 
         var targetDate = new DateTime(2023, 1, 1);
-        
+
         var refreshToken2Id = Guid.Parse("21111111-1111-1111-1111-111111111111");
 
         var expected = new RefreshToken(refreshToken2Id, 2, "finger_print2", targetDate.AddDays(2), targetDate.AddDays(3));
         var actual = refreshTokenService.GetRefreshToken(refreshToken2Id.ToString());
 
         Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void GenerateRefreshToken_ReturnValidRefreshToken()
+    {
+        var mock = CreateMock();
+
+        var refreshTokenService = new RefreshTokenService(mock.Object);
+
+        var newRefreshToken = refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate()
+        {
+            UserId = 1,
+            FingerPrint = "finger_print1"
+        });
+
+        // проверяет по ссылке
+        mock.Verify(repo => repo.Insert(newRefreshToken));
+
+        Assert.True(true);
+    }
+
+    [Fact]
+    public void DeleteRefreshToken()
+    {
+        var mock = CreateMock();
+
+        var refreshTokenService = new RefreshTokenService(mock.Object);
+
+        var newRefreshToken = refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate()
+        {
+            UserId = 1,
+            FingerPrint = "finger_print1"
+        });
+
+        refreshTokenService.RemoveRefreshToken(newRefreshToken);
+
+        mock.Verify(repo => repo.Delete(newRefreshToken.Id));
+
+        Assert.True(true);
     }
 }

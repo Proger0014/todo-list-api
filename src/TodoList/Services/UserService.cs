@@ -1,6 +1,7 @@
 using TodoList.DTO.User;
 using TodoList.Models.User;
 using TodoList.Exceptions;
+using TodoList.Constants;
 
 namespace TodoList.Services;
 
@@ -20,6 +21,26 @@ public class UserService
         if (existsUser == null)
         {
             throw new NotFoundException("User not found");
+        }
+
+        return existsUser;
+    }
+
+    public User GetUserWithAccessDeniedCheck(UserAccessDeniedCheck accessDeniedCheck)
+    {
+        var existsUser = _userRepository.GetById(accessDeniedCheck.UserId);
+
+        if (existsUser == null)
+        {
+            throw new NotFoundException("User not found");
+        }
+
+        var userIdFromPayload = long.Parse(accessDeniedCheck.UserClaims
+                .FirstOrDefault(uc => uc.Type == CustomClaimTypes.UserId)!.Value);
+
+        if (userIdFromPayload != accessDeniedCheck.UserId)
+        {
+            throw new AccessDeniedException();
         }
 
         return existsUser;

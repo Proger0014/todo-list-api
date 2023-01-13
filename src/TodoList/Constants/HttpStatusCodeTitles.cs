@@ -9,10 +9,12 @@ public static class HttpStatusCodeTitles
         { HttpStatusCode.BadRequest, BadRequest },
         { HttpStatusCode.NotFound, NotFound },
         { HttpStatusCode.Found, Found },
-        { HttpStatusCode.InternalServerError, InternalServerError }
+        { HttpStatusCode.InternalServerError, InternalServerError },
+        { HttpStatusCode.Forbidden, Forbidden }
     };
     public const string BadRequest = "Bad Request";
     public const string NotFound = "Not Found";
     public const string Found = "Found";
     public const string InternalServerError = "Internal Server Error";
+    public const string Forbidden = "Forbidden";
 }
