@@ -112,3 +112,6 @@ app.UseGlobalExceptionHandling();
 app.MapControllers();
 
 app.Run();
+
+// for WebApplicationFactory
+public partial class Program { }

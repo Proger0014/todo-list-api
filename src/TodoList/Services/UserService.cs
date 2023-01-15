@@ -2,6 +2,8 @@ using TodoList.DTO.User;
 using TodoList.Models.User;
 using TodoList.Exceptions;
 using TodoList.Constants;
+using Microsoft.IdentityModel.JsonWebTokens;
+using System.Security.Claims;
 
 namespace TodoList.Services;
 
@@ -34,9 +36,9 @@ public class UserService
         {
             throw new NotFoundException("User not found");
         }
-
+        
         var userIdFromPayload = long.Parse(accessDeniedCheck.UserClaims
-                .FirstOrDefault(uc => uc.Type == CustomClaimTypes.UserId)!.Value);
+                .FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)!.Value);
 
         if (userIdFromPayload != accessDeniedCheck.UserId)
         {

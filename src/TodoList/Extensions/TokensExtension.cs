@@ -3,7 +3,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TodoList.Models.User;
-using TodoList.Constants;
 
 namespace TodoList.Extensions;
 
@@ -18,13 +17,12 @@ public static class TokensExtension
 
         var claims = new[]
         {
-            new Claim("name", user.NickName),
-            new Claim(CustomClaimTypes.UserId, user.Id.ToString())
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) // потом также, как и nameidentifier
         };
 
         var token = new JwtSecurityToken(
-            "Jwt:Issuer".GetSetting(env),
-            "Jwt:Audience".GetSetting(env),
+            issuer: "Jwt:Issuer".GetSetting(env),
+            audience: "Jwt:Audience".GetSetting(env),
             claims: claims,
             expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(1)),
             signingCredentials: credentials);

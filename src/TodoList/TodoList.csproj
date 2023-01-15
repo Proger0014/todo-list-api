@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="BusinessLogic\**" />
     <Compile Remove="Config\**" />
+    <Content Remove="BusinessLogic\**" />
     <Content Remove="Config\**" />
+    <EmbeddedResource Remove="BusinessLogic\**" />
     <EmbeddedResource Remove="Config\**" />
+    <None Remove="BusinessLogic\**" />
     <None Remove="Config\**" />
 	  
 	<None Update="Properties/launchSettings.json">
@@ -31,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="BusinessLogic\" />
     <Folder Include="Controllers\" />
     <Folder Include="DTO\User\" />
     <Folder Include="Models\RefreshToken\" />
