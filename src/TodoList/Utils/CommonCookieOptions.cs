@@ -1,3 +1,5 @@
+using TodoList.Extensions;
+
 namespace TodoList.Utils;
 
 public static class CommonCookieOptions
@@ -5,7 +7,7 @@ public static class CommonCookieOptions
     public static CookieOptions Default => new()
     {
         HttpOnly = true,
-        MaxAge = TimeSpan.FromMinutes(20),
+        MaxAge = TimeSpan.FromMinutes(MaxAgeRefreshToken()),
         Path = "/api/v1/auth"
     };
 
@@ -16,4 +18,12 @@ public static class CommonCookieOptions
         Expires = DateTime.Now.AddDays(-1),
         Path = "/api/v1/auth"
     };
+
+
+    public static int MaxAgeRefreshToken()
+    {
+        var env = CommonUtils.GetEnvironment();
+
+        return int.Parse("Jwt:RefreshToken:MaxAge".GetSetting(env));
+    }
 }

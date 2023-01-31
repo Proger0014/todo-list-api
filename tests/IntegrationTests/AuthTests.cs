@@ -59,7 +59,7 @@ public class AuthTests : IClassFixture<WebApplicationFactory<Program>>
 
     [Fact]
     public async Task Login_SendNotExistingUser_Return404()
-    {
+    {   
         var client = _factory.CreateClient();
 
         var userLogin = new UserLoginRequest()

@@ -2,7 +2,6 @@ using TodoList.DTO.User;
 using TodoList.Models.User;
 using TodoList.Exceptions;
 using TodoList.Constants;
-using Microsoft.IdentityModel.JsonWebTokens;
 using System.Security.Claims;
 
 namespace TodoList.Services;

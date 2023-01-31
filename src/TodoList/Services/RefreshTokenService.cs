@@ -1,6 +1,7 @@
 using TodoList.DTO.Token;
 using TodoList.Models.RefreshToken;
 using TodoList.Exceptions;
+using TodoList.Utils;
 
 namespace TodoList.Services;
 
@@ -27,25 +28,27 @@ public class RefreshTokenService
 
     public RefreshToken GetRefreshTokenByUserId(long userId)
     {
-        var existsUser = _refreshTokenRepository.GetByUserId(userId);
+        var existsRefreshToken = _refreshTokenRepository.GetByUserId(userId);
 
-        if (existsUser == null)
+        if (existsRefreshToken == null)
         {
             throw new NotFoundException("RefreshToken not found");
         }
 
-        return existsUser;
+        return existsRefreshToken;
     }
 
     public RefreshToken GenerateRefreshToken(RefreshTokenCreate refreshTokenCreate)
     {
+        int expires = CommonCookieOptions.MaxAgeRefreshToken();
+
         var token = new RefreshToken()
         {
             Id = Guid.NewGuid(),
             UserId = refreshTokenCreate.UserId,
             FingerPrint = refreshTokenCreate.FingerPrint,
             AddedTime = DateTime.Now,
-            ExpirationTime = DateTime.Now.Add(TimeSpan.FromMinutes(10))
+            ExpirationTime = DateTime.Now.Add(TimeSpan.FromMinutes(expires))
         };
 
         _refreshTokenRepository.Insert(token);

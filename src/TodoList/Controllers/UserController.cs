@@ -2,10 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TodoList.Exceptions;
-using TodoList.Models.User;
 using TodoList.Services;
-using TodoList.Constants;
 using TodoList.DTO.User;
+using TodoList.Constants;
 
 namespace TodoList.Controllers;
 
@@ -29,7 +28,7 @@ public class UserController : ControllerBase
 
         if (userIdentity == null)
         {
-            throw new AccessDeniedException("Not authorize");
+            throw new AccessDeniedException(ExceptionMessage.ACCESS_DENIED);
         }
 
         var user = _userService.GetUserWithAccessDeniedCheck(new UserAccessDeniedCheck()

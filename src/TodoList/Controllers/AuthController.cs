@@ -6,6 +6,7 @@ using TodoList.DTO.Token;
 using TodoList.Extensions;
 using TodoList.Utils;
 using TodoList.Exceptions;
+using TodoList.Constants;
 
 namespace TodoList.Controllers;
 
@@ -29,7 +30,6 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public IActionResult Login([FromBody] UserLoginRequest login)
     {
-
         Models.User.User user = _userService.GetUserByLogin(login);
 
         try
@@ -46,7 +46,7 @@ public class AuthController : ControllerBase
             FingerPrint = HttpContext.Request.Headers["User-Agent"].ToString()
         }).Id.ToString();
 
-        HttpContext.Response.Cookies.Append("refreshToken", refreshToken, CommonCookieOptions.Default);
+        HttpContext.Response.Cookies.Append(CommonConstants.REFRESH_TOKEN_NAME, refreshToken, CommonCookieOptions.Default);
 
         return Ok(new TokenResponse()
         {
@@ -71,26 +71,20 @@ public class AuthController : ControllerBase
     [HttpPost("refresh-token")]
     public IActionResult RefreshToken()
     {
-        bool hasRefreshToken = HttpContext.Request.Cookies
-            .TryGetValue("refreshToken", out string? currentRefreshTokenId);
+        string currentRefrehsTokenId = GetExistingRefreshTokenId();
 
-        if (!hasRefreshToken || string.IsNullOrEmpty(currentRefreshTokenId))
-        {
-            throw new NotFoundException("not existing refresh token cookie");
-        }
-
-        var currentRefreshToken = _refreshTokenService.GetRefreshToken(currentRefreshTokenId);
+        var currentRefreshToken = _refreshTokenService.GetRefreshToken(currentRefrehsTokenId);
 
         if (currentRefreshToken.IsRevorked())
         {
-            throw new TokenExpiredException("token expired");
+            throw new TokenExpiredException(ExceptionMessage.TOKEN_EXPIRED);
         }
 
         var userIdentity = HttpContext.User.Identity;
 
         if (userIdentity == null)
         {
-            throw new AccessDeniedException("Not authorize");
+            throw new AccessDeniedException(ExceptionMessage.ACCESS_DENIED);
         }
 
         var user = _userService.GetUserById(currentRefreshToken.UserId);
@@ -105,7 +99,7 @@ public class AuthController : ControllerBase
             FingerPrint = HttpContext.Request.Headers["User-Agent"].ToString()
         }).Id.ToString();
 
-        HttpContext.Response.Cookies.Append("refreshToken", refreshToken, CommonCookieOptions.Default);
+        HttpContext.Response.Cookies.Append(CommonConstants.REFRESH_TOKEN_NAME, refreshToken, CommonCookieOptions.Default);
 
         return Ok(new TokenResponse()
         {
@@ -117,13 +111,7 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        bool hasRefreshToken = HttpContext.Request.Cookies
-            .TryGetValue("refreshToken", out string? currentRefreshTokenId);
-
-        if (!hasRefreshToken || string.IsNullOrEmpty(currentRefreshTokenId))
-        {
-            throw new NotFoundException("not existing refresh token cookie");
-        }
+        string currentRefreshTokenId = GetExistingRefreshTokenId();
 
         var currentRefreshToken = _refreshTokenService.GetRefreshToken(currentRefreshTokenId);
 
@@ -137,6 +125,19 @@ public class AuthController : ControllerBase
     private void DeleteRefreshTokenCookie()
     {
         HttpContext.Response.Cookies
-            .Delete("refreshToken", CommonCookieOptions.Delete);
+            .Delete(CommonConstants.REFRESH_TOKEN_NAME, CommonCookieOptions.Delete);
+    }
+
+    private string GetExistingRefreshTokenId()
+    {
+        bool hasRefreshToken = HttpContext.Request.Cookies
+            .TryGetValue("refreshToken", out string? currentRefreshTokenId);
+
+        if (!hasRefreshToken || string.IsNullOrEmpty(currentRefreshTokenId))
+        {
+            throw new NotFoundException(ExceptionMessage.NOT_EXISTING_REFRESH_TOKEN);
+        }
+
+        return currentRefreshTokenId;
     }
 }
