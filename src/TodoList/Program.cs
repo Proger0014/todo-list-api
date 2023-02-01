@@ -50,14 +50,6 @@ builder.Services.AddApiVersioning();
 
 builder.Services.AddControllers();
 
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
-{
-    options.Cookie.Name = "AppSession";
-    options.Cookie.HttpOnly = true;
-    options.Cookie.Expiration = TimeSpan.FromMinutes(20);
-});
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -85,7 +77,6 @@ builder.Services.AddSwaggerGen(c =>
             new string[] { }
         }
     });
-
 });
 
 var app = builder.Build();
