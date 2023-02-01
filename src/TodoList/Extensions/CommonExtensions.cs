@@ -34,13 +34,13 @@ public static class CommonExtensions
 
         if (string.IsNullOrEmpty(value))
         {
-            throw new KeyNotFoundException(string.Format(ExceptionMessage.KEY_IS_NOT_FOUND_SETTING, key, GetSettingName(env)));
+            throw new KeyNotFoundException(string.Format(ExceptionMessage.KEY_IS_NOT_FOUND_SETTING, key, env.GetSettingName()));
         }
 
         return value;
     }
 
-    public static string GetConnectionString(this string connectionName, Setting setting = Setting.LauchSettings)
+    public static string GetConnectionString(this Setting setting, string connectionName)
     {
         if (setting == Setting.LauchSettings)
         {
@@ -53,7 +53,7 @@ public static class CommonExtensions
 
         if (string.IsNullOrEmpty(connectionString))
         {
-            throw new KeyNotFoundException(string.Format(ExceptionMessage.CONNECTION_STRING_IS_NOT_FOUND, GetSettingName(setting)));
+            throw new KeyNotFoundException(string.Format(ExceptionMessage.CONNECTION_STRING_IS_NOT_FOUND, setting.GetSettingName()));
         }
 
         return connectionString;
@@ -79,7 +79,7 @@ public static class CommonExtensions
             .Build();
     }
 
-    private static string GetSettingName(this Setting setting)
+    public static string GetSettingName(this Setting setting)
     {
         return EnvironmentAppsettings[setting];
     }
