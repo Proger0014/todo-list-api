@@ -24,6 +24,6 @@ public static class CommonCookieOptions
     {
         var env = CommonUtils.GetEnvironment();
 
-        return int.Parse("Jwt:RefreshToken:MaxAge".GetSetting(env));
+        return int.Parse(env.GetSetting("Jwt:RefreshToken:MaxAge"));
     }
 }

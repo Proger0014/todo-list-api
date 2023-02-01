@@ -6,7 +6,7 @@ public static class CommonUtils
 {
     public static Setting GetEnvironment()
     {
-        var env = "profiles:TodoList:environmentVariables:ASPNETCORE_ENVIRONMENT".GetSetting(Setting.LauchSettings);
+        var env = Setting.LauchSettings.GetSetting("profiles:TodoList:environmentVariables:ASPNETCORE_ENVIRONMENT");
 
         return env switch
         {

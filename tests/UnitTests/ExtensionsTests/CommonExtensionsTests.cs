@@ -24,7 +24,7 @@ public class CommonExtensionsTests
     public void GetAppSetting_ExistsAppSetting_GetString()
     {
         var expected = "my_super_secret_key_1";
-        var actual = "Jwt:Key".GetSetting(CommonExtensions.Setting.Dev);
+        var actual = CommonExtensions.Setting.Dev.GetSetting("Jwt:Key");
 
         Assert.Equal(expected, actual);
     }
@@ -33,6 +33,6 @@ public class CommonExtensionsTests
     public void GetAppSetting_NotExistsAppSetting_ThrowsKeyNotFoundException()
     {
         string someAppSettingKey = "someAppSettingKey";
-        Assert.Throws<KeyNotFoundException>(() => { someAppSettingKey.GetSetting(CommonExtensions.Setting.Dev); });
+        Assert.Throws<KeyNotFoundException>(() => { CommonExtensions.Setting.Dev.GetSetting(someAppSettingKey); });
     }
 }

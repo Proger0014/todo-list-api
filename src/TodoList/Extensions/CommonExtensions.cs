@@ -26,8 +26,7 @@ public static class CommonExtensions
         { Setting.LauchSettings, "Properties/launchSettings.json" }
     };
 
-
-    public static string GetSetting(this string key, Setting env)
+    public static string GetSetting(this Setting env, string key)
     {
         var configuration = SettingsConfigurationInit(env);
 

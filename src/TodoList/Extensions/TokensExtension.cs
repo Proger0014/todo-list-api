@@ -13,7 +13,7 @@ public static class TokensExtension
     {
         var env = CommonUtils.GetEnvironment();
 
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Jwt:Key".GetSetting(env)));
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(env.GetSetting("Jwt:Key")));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
@@ -21,11 +21,11 @@ public static class TokensExtension
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) // потом также, как и nameidentifier
         };
 
-        int expiresInMinutes = int.Parse("Jwt:Expires".GetSetting(env));
+        int expiresInMinutes = int.Parse(env.GetSetting("Jwt:Expires"));
 
         var token = new JwtSecurityToken(
-            issuer: "Jwt:Issuer".GetSetting(env),
-            audience: "Jwt:Audience".GetSetting(env),
+            issuer: env.GetSetting("Jwt:Issuer"),
+            audience: env.GetSetting("Jwt:Audience"),
             claims: claims,
             expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(expiresInMinutes)),
             signingCredentials: credentials);
