@@ -2,6 +2,7 @@ using TodoList.DTO.Token;
 using TodoList.Models.RefreshToken;
 using TodoList.Exceptions;
 using TodoList.Utils;
+using TodoList.Constants;
 
 namespace TodoList.Services;
 
@@ -20,7 +21,7 @@ public class RefreshTokenService
 
         if (existsRefreshToken == null)
         {
-            throw new NotFoundException("RefreshToken not found");
+            throw new NotFoundException(ExceptionMessage.REFRESH_TOKEN_NOT_FOUND);
         }
 
         return existsRefreshToken;
@@ -32,7 +33,7 @@ public class RefreshTokenService
 
         if (existsRefreshToken == null)
         {
-            throw new NotFoundException("RefreshToken not found");
+            throw new NotFoundException(ExceptionMessage.REFRESH_TOKEN_NOT_FOUND);
         }
 
         return existsRefreshToken;

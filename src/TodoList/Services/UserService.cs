@@ -21,7 +21,7 @@ public class UserService
 
         if (existsUser == null)
         {
-            throw new NotFoundException("User not found");
+            throw new NotFoundException(string.Format(ExceptionMessage.USER_NOT_FOUND_WITH_ID, id));
         }
 
         return existsUser;
@@ -33,7 +33,7 @@ public class UserService
 
         if (existsUser == null)
         {
-            throw new NotFoundException("User not found");
+            throw new NotFoundException(string.Format(ExceptionMessage.USER_NOT_FOUND_WITH_ID, accessDeniedCheck.UserId));
         }
         
         var userIdFromPayload = long.Parse(accessDeniedCheck.UserClaims
@@ -53,7 +53,7 @@ public class UserService
 
         if (existsUser == null)
         {
-            throw new NotFoundException("User not found");
+            throw new NotFoundException(string.Format(ExceptionMessage.USER_NOT_FOUND_WITH_LOGIN, userLogin.Login));
         }
 
         return existsUser;
@@ -66,7 +66,7 @@ public class UserService
 
         if (existsUserWithSameNickname != null)
         {
-            throw new ExistsException("This user is exists");
+            throw new ExistsException(string.Format(ExceptionMessage.USER_IS_EXISTS, register.Nickname));
         }
 
         var user = new User(

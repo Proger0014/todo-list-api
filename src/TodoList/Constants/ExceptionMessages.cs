@@ -10,7 +10,8 @@ public static class ExceptionMessage
 
     // NotFoundException
     public const string NOT_EXISTING_REFRESH_TOKEN = "not existing refresh token cookie";
-    public const string USER_NOT_FOUND = "user not found";
+    public const string USER_NOT_FOUND_WITH_ID = "user with id {0:long} not found";
+    public const string USER_NOT_FOUND_WITH_LOGIN = "user with login {0:long} not found";
 
     // NotFoundException
     public const string REFRESH_TOKEN_NOT_FOUND = "refresh token not found";

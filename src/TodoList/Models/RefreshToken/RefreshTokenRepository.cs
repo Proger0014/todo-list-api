@@ -3,7 +3,7 @@ using TodoList.Models.Base;
 namespace TodoList.Models.RefreshToken;
 
 public class RefreshTokenRepository :
-    BaseRepository<RefreshToken, Guid>,
+    CommonProps<RefreshToken, Guid>,
     IRefreshTokenRepository
 {
     public RefreshTokenRepository(ApplicationDBContext context)

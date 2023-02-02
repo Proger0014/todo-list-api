@@ -3,7 +3,7 @@ using TodoList.Models.Base;
 namespace TodoList.Models.User;
 
 public class UserRepository :
-    BaseRepository<User, long>,
+    CommonProps<User, long>,
     IUserRepository
 {
     public UserRepository(ApplicationDBContext context)

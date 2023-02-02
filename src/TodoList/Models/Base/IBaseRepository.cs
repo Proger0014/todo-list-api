@@ -6,21 +6,21 @@ namespace TodoList.Models.Base;
 public interface IBaseRepository<T, E>
     where T : class, ID<E>
 {
-    public interface GetAll : CommonProps<T, E>
+    public interface GetAll : ICommonProps<T, E>
     {
         IEnumerable<T> GetAll()
         {
             return _table.ToList();
         }
     }
-    public interface GetById : CommonProps<T, E>
+    public interface GetById : ICommonProps<T, E>
     {
         T? GetById(E id)
         {
             return _table.Find(id);
         }
     }
-    public interface Insert : CommonProps<T, E>
+    public interface Insert : ICommonProps<T, E>
     {
         void Insert(T obj)
         {
@@ -28,7 +28,7 @@ public interface IBaseRepository<T, E>
             _context.SaveChanges();
         }
     }
-    public interface Update : CommonProps<T, E>
+    public interface Update : ICommonProps<T, E>
     {
         void Update(T obj)
         {
@@ -37,7 +37,7 @@ public interface IBaseRepository<T, E>
             _context.SaveChanges();
         }
     }
-    public interface Delete : CommonProps<T, E>
+    public interface Delete : ICommonProps<T, E>
     {
         void Delete(E id)
         {
@@ -52,7 +52,7 @@ public interface IBaseRepository<T, E>
             _context.SaveChanges();
         }
     }
-    public interface Save : CommonProps<T, E>
+    public interface Save : ICommonProps<T, E>
     {
         void Save()
         {
