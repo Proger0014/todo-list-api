@@ -2,6 +2,7 @@
 using TodoList.Models.RefreshToken;
 using TodoList.DTO.Token;
 using TodoList.Services;
+using TodoList.Exceptions;
 
 namespace UnitTests.Services;
 
@@ -18,6 +19,12 @@ public class RefreshTokenServiceTests
     private const int USER_ID_FOR_RT2 = 2;
     private const string FINGER_PRINT_FOR_RT2 = "finger_print2";
     private const string REFRESH_TOKEN2_ID_STRING = "21111111-1111-1111-1111-111111111111";
+
+    private const string NOT_EXISTS_RT_ID_STRING = "21111111-1111-1111-1111-211311111111";
+    private const int NOT_EXISTS_USER_ID_FOR_RT = 3;
+
+    // exception messages
+    private const string REFRESH_TOKEN_NOT_FOUND = "refresh token not found";
 
     private Mock<IRefreshTokenRepository> CreateMock()
     {
@@ -48,6 +55,19 @@ public class RefreshTokenServiceTests
         return mock;
     }
 
+    // T - is type of exception
+    private void TestTemplate_With_ThrowException<T>(Action<RefreshTokenService> guessAction, string expectedExceptionMessage)
+        where T : Exception
+    {
+        var refreshTokenService = new RefreshTokenService(CreateMock().Object);
+
+        var exception = Assert.Throws<T>(() => guessAction(refreshTokenService));
+
+        var actualExceptionMessage = exception.Message;
+
+        Assert.Equal(expectedExceptionMessage, actualExceptionMessage);
+    }
+
     [Fact]
     public void GetRefreshToken_ByUserId_ReturnRefreshToken()
     {
@@ -63,6 +83,14 @@ public class RefreshTokenServiceTests
     }
 
     [Fact]
+    public void GetRefreshToken_NotExistsUserId_ThrowException()
+    {
+        TestTemplate_With_ThrowException<NotFoundException>(
+            (refreshTokenService) => refreshTokenService.GetRefreshTokenByUserId(NOT_EXISTS_USER_ID_FOR_RT),
+            REFRESH_TOKEN_NOT_FOUND);
+    }
+
+    [Fact]
     public void GetRefreshToken_ById_ReturnRefreshToken()
     {
         var refreshTokenService = new RefreshTokenService(CreateMock().Object);
@@ -74,6 +102,14 @@ public class RefreshTokenServiceTests
         var actual = refreshTokenService.GetRefreshToken(refreshToken2Id.ToString());
 
         Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void GetRefreshToken_NotExistsId_ThrowException()
+    {
+        TestTemplate_With_ThrowException<NotFoundException>(
+            (refreshTokenService) => refreshTokenService.GetRefreshToken(NOT_EXISTS_RT_ID_STRING),
+            REFRESH_TOKEN_NOT_FOUND);
     }
 
     [Fact]
