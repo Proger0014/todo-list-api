@@ -3,6 +3,7 @@ using TodoList.Models.User;
 using TodoList.Exceptions;
 using TodoList.Constants;
 using System.Security.Claims;
+using TodoList.Utils;
 
 namespace TodoList.Services;
 
@@ -23,12 +24,12 @@ public class UserService
         {
             throw new NotFoundException(string.Format(ExceptionMessage.USER_NOT_FOUND_WITH_ID, accessDeniedCheck.UserId));
         }
-        
-        var userIdFromPayload = long.Parse(accessDeniedCheck.UserClaims
-                .FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)!.Value);
+
+        var userIdFromPayload = ControllersUtils.GetUserIdFromPayload(accessDeniedCheck.UserClaims);
 
         if (userIdFromPayload != accessDeniedCheck.UserId)
         {
+            // TODO: Нормальное описание сюда добавить
             throw new AccessDeniedException();
         }
 

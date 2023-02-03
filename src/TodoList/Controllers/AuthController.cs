@@ -7,6 +7,7 @@ using TodoList.Extensions;
 using TodoList.Utils;
 using TodoList.Exceptions;
 using TodoList.Constants;
+using System.Security.Claims;
 
 namespace TodoList.Controllers;
 
@@ -87,7 +88,11 @@ public class AuthController : ControllerBase
             throw new AccessDeniedException(ExceptionMessage.ACCESS_DENIED);
         }
 
-        var user = _userService.GetUserById(currentRefreshToken.UserId);
+        var user = _userService.GetUserWithAccessDeniedCheck(new UserAccessDeniedCheck()
+        {
+            UserClaims = ((ClaimsIdentity)userIdentity).Claims,
+            UserId = ControllersUtils.GetUserIdFromPayload(((ClaimsIdentity)userIdentity).Claims)
+        });
 
         _refreshTokenService.RemoveRefreshToken(currentRefreshToken);
 

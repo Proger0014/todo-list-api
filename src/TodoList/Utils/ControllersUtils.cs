@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using TodoList.Constants;
 using TodoList.Exceptions;
 
@@ -21,5 +22,11 @@ public static class ControllersUtils
         }
 
         return currentRefreshTokenId;
+    }
+
+    public static long GetUserIdFromPayload(IEnumerable<Claim> userClaims)
+    {
+        return long.Parse(userClaims
+            .FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)!.Value);
     }
 }
