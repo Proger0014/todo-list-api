@@ -5,7 +5,7 @@ using TodoList.Models.Id;
 namespace TodoList.Models.User;
 
 [Table("users", Schema = "public")]
-public class User : ID<long>
+public class User : ID<long>, ICloneable
 {
     [Key, Column("id"), DataType("bigserial")]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -29,4 +29,29 @@ public class User : ID<long>
         Login = "";
         Password = "";
     }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj == this) return true;
+        if (obj == null) return false;
+
+        User targetUser = (User)obj;
+
+        if (targetUser.Id == Id &&
+            targetUser.Login == Login &&
+            targetUser.NickName == NickName &&
+            targetUser.Password == Password)
+            return true;
+
+        return false;
+    }
+
+    public object Clone() =>
+        new User()
+        {
+            Id = Id,
+            NickName = (string)NickName.Clone(),
+            Login = (string)Login.Clone(),
+            Password = (string)Password.Clone()
+        };
 }
