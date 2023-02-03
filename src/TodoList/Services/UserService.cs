@@ -15,18 +15,6 @@ public class UserService
         _userRepository = userRepository;
     }
 
-    public User GetUserById(long id)
-    {
-        var existsUser = _userRepository.GetById(id);
-
-        if (existsUser == null)
-        {
-            throw new NotFoundException(string.Format(ExceptionMessage.USER_NOT_FOUND_WITH_ID, id));
-        }
-
-        return existsUser;
-    }
-
     public User GetUserWithAccessDeniedCheck(UserAccessDeniedCheck accessDeniedCheck)
     {
         var existsUser = _userRepository.GetById(accessDeniedCheck.UserId);
