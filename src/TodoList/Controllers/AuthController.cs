@@ -71,7 +71,7 @@ public class AuthController : ControllerBase
     [HttpPost("refresh-token")]
     public IActionResult RefreshToken()
     {
-        string currentRefrehsTokenId = GetExistingRefreshTokenId();
+        string currentRefrehsTokenId = ControllersUtils.GetExistingRefreshTokenId(HttpContext.Request.Cookies);
 
         var currentRefreshToken = _refreshTokenService.GetRefreshToken(currentRefrehsTokenId);
 
@@ -90,7 +90,8 @@ public class AuthController : ControllerBase
         var user = _userService.GetUserById(currentRefreshToken.UserId);
 
         _refreshTokenService.RemoveRefreshToken(currentRefreshToken);
-        DeleteRefreshTokenCookie();
+
+        ControllersUtils.DeleteRefreshTokenCookie(HttpContext.Response.Cookies);
 
         var accessToken = user.GenerateJWT();
         var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate()
@@ -111,33 +112,14 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        string currentRefreshTokenId = GetExistingRefreshTokenId();
+        string currentRefreshTokenId = ControllersUtils.GetExistingRefreshTokenId(HttpContext.Request.Cookies);
 
         var currentRefreshToken = _refreshTokenService.GetRefreshToken(currentRefreshTokenId);
 
         _refreshTokenService.RemoveRefreshToken(currentRefreshToken);
 
-        DeleteRefreshTokenCookie();
+        ControllersUtils.DeleteRefreshTokenCookie(HttpContext.Response.Cookies);
 
         return Ok();
-    }
-
-    private void DeleteRefreshTokenCookie()
-    {
-        HttpContext.Response.Cookies
-            .Delete(CommonConstants.REFRESH_TOKEN_NAME, CommonCookieOptions.Delete);
-    }
-
-    private string GetExistingRefreshTokenId()
-    {
-        bool hasRefreshToken = HttpContext.Request.Cookies
-            .TryGetValue("refreshToken", out string? currentRefreshTokenId);
-
-        if (!hasRefreshToken || string.IsNullOrEmpty(currentRefreshTokenId))
-        {
-            throw new NotFoundException(ExceptionMessage.NOT_EXISTING_REFRESH_TOKEN);
-        }
-
-        return currentRefreshTokenId;
     }
 }
