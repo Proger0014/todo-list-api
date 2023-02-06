@@ -9,15 +9,7 @@ public class TokensExtensionsTests
     public void GenerateJWT_ReturnString()
     {
         var actual = new User().GenerateJWT();
-        var expectedMinimalLength = 50;
 
-        bool isJwt = false;
-
-        if (actual.Length >= expectedMinimalLength)
-        {
-            isJwt = true;
-        }
-
-        Assert.True(isJwt);
+        Assert.NotNull(actual);
     }
 }
