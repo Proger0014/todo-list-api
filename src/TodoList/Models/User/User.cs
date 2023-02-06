@@ -46,6 +46,14 @@ public class User : ID<long>, ICloneable
         return false;
     }
 
+    public override int GetHashCode()
+    {
+        return
+            NickName.GetHashCode() +
+            Login.GetHashCode() + 
+            Password.GetHashCode();
+    }
+
     public object Clone() =>
         new User()
         {
