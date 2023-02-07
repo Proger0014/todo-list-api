@@ -4,7 +4,7 @@ using TodoList.DTO.Token;
 using TodoList.Services;
 using TodoList.Exceptions;
 
-namespace UnitTests.Services;
+namespace UnitTests.ServicesTests;
 
 public class RefreshTokenServiceTests
 {

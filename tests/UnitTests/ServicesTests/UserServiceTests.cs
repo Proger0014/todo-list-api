@@ -4,7 +4,7 @@ using TodoList.DTO.User;
 using TodoList.Models.User;
 using TodoList.Services;
 
-namespace UnitTests.Services;
+namespace UnitTests.ServicesTests;
 
 public class UserServiceTests
 {
