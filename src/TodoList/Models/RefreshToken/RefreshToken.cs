@@ -4,7 +4,7 @@ using TodoList.Models.Id;
 
 namespace TodoList.Models.RefreshToken;
 
-public class RefreshToken : ID<Guid>
+public class RefreshToken : ID<Guid>, IEquatable<RefreshToken>
 {
     [Key]
     public Guid Id { get; set; }
@@ -61,5 +61,20 @@ public class RefreshToken : ID<Guid>
     public override int GetHashCode()
     {
         return base.GetHashCode();
+    }
+
+    public bool Equals(RefreshToken? otherRefreshToken)
+    {
+        if (otherRefreshToken == null) return false;
+        if (otherRefreshToken.Id == Id &&
+                otherRefreshToken.UserId == UserId &&
+                otherRefreshToken.FingerPrint == FingerPrint &&
+                otherRefreshToken.AddedTime == AddedTime &&
+                otherRefreshToken.ExpirationTime == ExpirationTime)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

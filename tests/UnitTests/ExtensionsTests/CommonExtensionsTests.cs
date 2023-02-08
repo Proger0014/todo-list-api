@@ -19,14 +19,12 @@ public class CommonExtensionsTests
     public void GetConnectionString_NotExistsConnectionString_ThrowsKeyNotFoundException()
     {
         string connectionName = "someConnectionString";
-        var exception = Assert.Throws<KeyNotFoundException>(() => { Setting.LauchSettings.GetConnectionString(connectionName); });
-
         var envFile = "appsettings.Development.json";
 
         string expectedExceptionMessage = string.Format(ExceptionMessage.CONNECTION_STRING_IS_NOT_FOUND, envFile);
-        string actualExceptionMessage = exception.Message;
 
-        Assert.Equal(expectedExceptionMessage, actualExceptionMessage);
+        var exception = Assert.Throws<KeyNotFoundException>(() => { Setting.LauchSettings.GetConnectionString(connectionName); });
+        Assert.Equal(expectedExceptionMessage, exception.Message);
     }
 
     [Fact]
@@ -41,14 +39,12 @@ public class CommonExtensionsTests
     [Fact]
     public void GetAppSetting_NotExistsAppSetting_ThrowsKeyNotFoundException()
     {
+        string envFile = "appsettings.Development.json";
         string someAppSettingKey = "someAppSettingKey";
-        var exception = Assert.Throws<KeyNotFoundException>(() => { Setting.Dev.GetSetting(someAppSettingKey); });
-
-        var envFile = "appsettings.Development.json";
 
         string expectedExceptionMessage = string.Format(ExceptionMessage.KEY_IS_NOT_FOUND_SETTING, someAppSettingKey, envFile);
-        string actualExceptionMessage = exception.Message;
 
-        Assert.Equal(expectedExceptionMessage, actualExceptionMessage);
+        var exception = Assert.Throws<KeyNotFoundException>(() => { Setting.Dev.GetSetting(someAppSettingKey); });
+        Assert.Equal(expectedExceptionMessage, exception.Message);
     }
 }

@@ -3,7 +3,7 @@ using TodoList.Models.User;
 
 namespace UnitTests.ExtensionsTests;
 
-public class TokensExtensionsTests
+public class TokensExtensionTests
 {
     [Fact]
     public void GenerateJWT_ReturnString()
