@@ -40,6 +40,7 @@ public class RefreshToken : ID<Guid>, IEquatable<RefreshToken>
         return DateTime.Now > ExpirationTime;
     }
 
+    // TODO: избавиться
     public override bool Equals(object? obj)
     {
         if (obj == null) return false;
@@ -67,10 +68,10 @@ public class RefreshToken : ID<Guid>, IEquatable<RefreshToken>
     {
         if (otherRefreshToken == null) return false;
         if (otherRefreshToken.Id == Id &&
-                otherRefreshToken.UserId == UserId &&
-                otherRefreshToken.FingerPrint == FingerPrint &&
-                otherRefreshToken.AddedTime == AddedTime &&
-                otherRefreshToken.ExpirationTime == ExpirationTime)
+            otherRefreshToken.UserId == UserId &&
+            otherRefreshToken.FingerPrint == FingerPrint &&
+            otherRefreshToken.AddedTime == AddedTime &&
+            otherRefreshToken.ExpirationTime == ExpirationTime)
         {
             return true;
         }

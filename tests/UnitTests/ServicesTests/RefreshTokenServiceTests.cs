@@ -3,8 +3,10 @@ using TodoList.Models.RefreshToken;
 using TodoList.DTO.Token;
 using TodoList.Services;
 using TodoList.Exceptions;
-using UnitTests.TestDataCollections;
 using UnitTests.Utils.ServicesTestsUtils;
+using UnitTests.TestDataCollections.ServicesTests.RefreshTokenServiceTests;
+using TodoList.Constants;
+using Xunit.Sdk;
 
 namespace UnitTests.ServicesTests;
 
@@ -70,60 +72,80 @@ public class RefreshTokenServiceTests
     }
 
     // T - is type of exception
-    private void TestTemplate_With_ThrowException<T>(Action<RefreshTokenService> guessAction, string expectedExceptionMessage)
+    private void TestTemplateWithThrowsException<T>(
+        Action guessAction, 
+        RefreshTokenService refreshTokenService,
+        string expectedExceptionMessage)
         where T : Exception
     {
-        var refreshTokenService = new RefreshTokenService(CreateMock().Object);
-
-        var exception = Assert.Throws<T>(() => guessAction(refreshTokenService));
-
-        var actualExceptionMessage = exception.Message;
-
-        Assert.Equal(expectedExceptionMessage, actualExceptionMessage);
+        T exception = Assert.Throws<T>(guessAction);
+        Assert.Equal(expectedExceptionMessage, exception.Message);
     }
 
     [Theory]
     [MemberData(nameof(RefreshTokenServiceTestData.RefreshTokens), MemberType = typeof(RefreshTokenServiceTestData))]
-    public void GetRefreshToken_ByExistsUserId_ReturnRefreshToken(RefreshToken expectedRefreshToken)
+    public void GetRefreshTokenByUserId_ExistsUserId_ReturnRefreshToken(RefreshToken expectedRefreshToken)
     {
+        // Arrange
         var mockRepo = RefreshTokenServiceTestsMocks.CreateByUserIdMock(expectedRefreshToken);
         var refreshTokenService = new RefreshTokenService(mockRepo.Object);
 
+        // Act
         var actualRefreshToken = refreshTokenService.GetRefreshTokenByUserId(expectedRefreshToken.UserId);
 
+        // Assert
         Assert.Equal(expectedRefreshToken, actualRefreshToken);
     }
 
-    [Fact]
-    public void GetRefreshToken_NotExistsUserId_ThrowException()
+    [Theory]
+    [MemberData(nameof(RefreshTokenServiceTestData.RefreshTokens), MemberType = typeof(RefreshTokenServiceTestData))]
+    public void GetRefreshTokenByUserId_NotExistsUserId_ThrowsNotFoundException(RefreshToken refreshToken)
     {
-        TestTemplate_With_ThrowException<NotFoundException>(
-            (refreshTokenService) => refreshTokenService.GetRefreshTokenByUserId(NOT_EXISTS_USER_ID_FOR_RT),
-            REFRESH_TOKEN_NOT_FOUND);
+        // Arrange
+        var mockRepo = new Mock<IRefreshTokenRepository>();
+        var refreshTokenService = new RefreshTokenService(mockRepo.Object);
+
+        // Act
+        Action act = () => refreshTokenService.GetRefreshTokenByUserId(refreshToken.UserId);
+
+        // Assert
+        var actualException = Assert.Throws<NotFoundException>(act);
+        Assert.Equal(ExceptionMessage.REFRESH_TOKEN_NOT_FOUND, actualException.Message);
     }
 
-    [Fact]
-    public void GetRefreshToken_ById_ReturnRefreshToken()
+    [Theory]
+    [MemberData(nameof(RefreshTokenServiceTestData.RefreshTokens), MemberType = typeof(RefreshTokenServiceTestData))]
+    public void GetRefreshToken_ByExistsId_ReturnRefreshToken(RefreshToken expectedRefreshToken)
     {
-        var refreshTokenService = new RefreshTokenService(CreateMock().Object);
+        // Arrange
+        var mockRepo = RefreshTokenServiceTestsMocks.CreateByIdMock(expectedRefreshToken);
+        var refreshTokenService = new RefreshTokenService(mockRepo.Object);
 
-        var refreshToken2Id = Guid.Parse(REFRESH_TOKEN2_ID_STRING);
+        // Act
+        var actualRefreshToken = refreshTokenService.GetRefreshToken(expectedRefreshToken.Id.ToString());
 
-        var expected = new RefreshToken(refreshToken2Id, USER_ID_FOR_RT2, 
-            FINGER_PRINT_FOR_RT2, ADDED_TIME_FOR_RT2, EXPIRATION_TIME_FOR_RT2);
-        var actual = refreshTokenService.GetRefreshToken(refreshToken2Id.ToString());
-
-        Assert.Equal(expected, actual);
+        // Assert
+        Assert.Equal(expectedRefreshToken, actualRefreshToken);
     }
 
-    [Fact]
-    public void GetRefreshToken_NotExistsId_ThrowException()
+    [Theory]
+    [MemberData(nameof(RefreshTokenServiceTestData.RefreshTokens), MemberType = typeof(RefreshTokenServiceTestData))]
+    public void GetRefreshToken_ByNotExistsId_ThrowsNotFoundException(RefreshToken refreshToken)
     {
-        TestTemplate_With_ThrowException<NotFoundException>(
-            (refreshTokenService) => refreshTokenService.GetRefreshToken(NOT_EXISTS_RT_ID_STRING),
-            REFRESH_TOKEN_NOT_FOUND);
+        // Arrange
+        var mockRepo = new Mock<IRefreshTokenRepository>();
+        var refreshTokenService = new RefreshTokenService(mockRepo.Object);
+
+        // Act
+        Action act = () => refreshTokenService.GetRefreshToken(refreshToken.Id.ToString());
+
+        // Assert
+        var actualException = Assert.Throws<NotFoundException>(act);
+        Assert.Equal(ExceptionMessage.REFRESH_TOKEN_NOT_FOUND, actualException.Message);
     }
 
+    // TODO: Отрефакторить это
+    // Также подумать об Инверсии зависимостей для CommonCookieOptions
     [Fact]
     public void GenerateRefreshToken_ReturnValidRefreshToken()
     {
