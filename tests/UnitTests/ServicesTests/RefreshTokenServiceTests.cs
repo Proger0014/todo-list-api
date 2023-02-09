@@ -6,7 +6,6 @@ using TodoList.Exceptions;
 using UnitTests.Utils.ServicesTestsUtils;
 using UnitTests.TestDataCollections.ServicesTests.RefreshTokenServiceTests;
 using TodoList.Constants;
-using Xunit.Sdk;
 
 namespace UnitTests.ServicesTests;
 
@@ -87,8 +86,8 @@ public class RefreshTokenServiceTests
     public void GetRefreshTokenByUserId_ExistsUserId_ReturnRefreshToken(RefreshToken expectedRefreshToken)
     {
         // Arrange
-        var mockRepo = RefreshTokenServiceTestsMocks.CreateByUserIdMock(expectedRefreshToken);
-        var refreshTokenService = new RefreshTokenService(mockRepo.Object);
+        var stubRepo = RefreshTokenServiceTestsFakes.CreateByUserIdFake(expectedRefreshToken);
+        var refreshTokenService = new RefreshTokenService(stubRepo.Object);
 
         // Act
         var actualRefreshToken = refreshTokenService.GetRefreshTokenByUserId(expectedRefreshToken.UserId);
@@ -102,8 +101,8 @@ public class RefreshTokenServiceTests
     public void GetRefreshTokenByUserId_NotExistsUserId_ThrowsNotFoundException(RefreshToken refreshToken)
     {
         // Arrange
-        var mockRepo = new Mock<IRefreshTokenRepository>();
-        var refreshTokenService = new RefreshTokenService(mockRepo.Object);
+        var stubRepo = new Mock<IRefreshTokenRepository>();
+        var refreshTokenService = new RefreshTokenService(stubRepo.Object);
 
         // Act
         Action act = () => refreshTokenService.GetRefreshTokenByUserId(refreshToken.UserId);
@@ -118,8 +117,8 @@ public class RefreshTokenServiceTests
     public void GetRefreshToken_ByExistsId_ReturnRefreshToken(RefreshToken expectedRefreshToken)
     {
         // Arrange
-        var mockRepo = RefreshTokenServiceTestsMocks.CreateByIdMock(expectedRefreshToken);
-        var refreshTokenService = new RefreshTokenService(mockRepo.Object);
+        var stubRepo = RefreshTokenServiceTestsFakes.CreateByIdFake(expectedRefreshToken);
+        var refreshTokenService = new RefreshTokenService(stubRepo.Object);
 
         // Act
         var actualRefreshToken = refreshTokenService.GetRefreshToken(expectedRefreshToken.Id.ToString());
@@ -133,8 +132,8 @@ public class RefreshTokenServiceTests
     public void GetRefreshToken_ByNotExistsId_ThrowsNotFoundException(RefreshToken refreshToken)
     {
         // Arrange
-        var mockRepo = new Mock<IRefreshTokenRepository>();
-        var refreshTokenService = new RefreshTokenService(mockRepo.Object);
+        var stubRepo = new Mock<IRefreshTokenRepository>();
+        var refreshTokenService = new RefreshTokenService(stubRepo.Object);
 
         // Act
         Action act = () => refreshTokenService.GetRefreshToken(refreshToken.Id.ToString());

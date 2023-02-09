@@ -3,25 +3,25 @@ using TodoList.Models.RefreshToken;
 
 namespace UnitTests.Utils.ServicesTestsUtils;
 
-public static class RefreshTokenServiceTestsMocks
+public static class RefreshTokenServiceTestsFakes
 {
-    public static Mock<IRefreshTokenRepository> CreateByUserIdMock(RefreshToken refreshToken)
+    public static Mock<IRefreshTokenRepository> CreateByUserIdFake(RefreshToken refreshToken)
     {
-        var mock = new Mock<IRefreshTokenRepository>();
+        var fake = new Mock<IRefreshTokenRepository>();
 
-        mock.Setup(rt => rt.GetByUserId(refreshToken.UserId))
+        fake.Setup(rt => rt.GetByUserId(refreshToken.UserId))
             .Returns(refreshToken);
 
-        return mock;
+        return fake;
     }
 
-    public static Mock<IRefreshTokenRepository> CreateByIdMock(RefreshToken refreshToken)
+    public static Mock<IRefreshTokenRepository> CreateByIdFake(RefreshToken refreshToken)
     {
-        var mock = new Mock<IRefreshTokenRepository>();
+        var fake = new Mock<IRefreshTokenRepository>();
 
-        mock.Setup(rt => rt.GetById(refreshToken.Id))
+        fake.Setup(rt => rt.GetById(refreshToken.Id))
             .Returns(refreshToken);
 
-        return mock;
+        return fake;
     }
 }
