@@ -1,4 +1,5 @@
-﻿using TodoList.Models.RefreshToken;
+﻿using TodoList.DTO.Token;
+using TodoList.Models.RefreshToken;
 
 namespace UnitTests.TestDataCollections.ServicesTests.RefreshTokenServiceTests;
 
@@ -26,5 +27,26 @@ internal class RefreshTokenServiceTestDataInit
         }
 
         return refreshTokens;
+    }
+
+    internal static IEnumerable<object[]> RefreshTokenCreateDTOsInit()
+    {
+        const int MAX_COUNT = 2;
+
+        var refreshTokenCreateDTOs = new List<object[]>();
+
+        for (int i = 0; i < MAX_COUNT; i++)
+        {
+            refreshTokenCreateDTOs.Add(new object[]
+            {
+                new RefreshTokenCreate()
+                {
+                    UserId = i,
+                    FingerPrint = $"finger-print_{i}"
+                }
+            });
+        }
+
+        return refreshTokenCreateDTOs;
     }
 }

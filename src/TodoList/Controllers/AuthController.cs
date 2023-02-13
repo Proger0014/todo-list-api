@@ -48,6 +48,7 @@ public class AuthController : ControllerBase
         }).Id.ToString();
 
         HttpContext.Response.Cookies.Append(CommonConstants.REFRESH_TOKEN_NAME, refreshToken, CommonCookieOptions.Default);
+        HttpContext.Response.Cookies.Append(CommonConstants.ACCESS_TOKEN_NAME, accessToken, CommonCookieOptions.Default);
 
         return Ok(new TokenResponse()
         {

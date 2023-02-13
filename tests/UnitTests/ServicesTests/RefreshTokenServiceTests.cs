@@ -145,23 +145,19 @@ public class RefreshTokenServiceTests
 
     // TODO: Отрефакторить это
     // Также подумать об Инверсии зависимостей для CommonCookieOptions
-    [Fact]
-    public void GenerateRefreshToken_ReturnValidRefreshToken()
+    [Theory]
+    [MemberData(nameof(RefreshTokenServiceTestData.RefreshTokenCreateDTOs), MemberType = typeof(RefreshTokenServiceTestData))]
+    public void GenerateRefreshToken_ValidRefreshTokenCreateDTO_ReturnValidRefreshToken(RefreshTokenCreate refreshTokenCreateDTO)
     {
-        var mock = CreateMock();
+        // Arrange
+        var mockRepo = new Mock<IRefreshTokenRepository>();
+        var refreshTokenService = new RefreshTokenService(mockRepo.Object);
 
-        var refreshTokenService = new RefreshTokenService(mock.Object);
+        // Act
+        refreshTokenService.GenerateRefreshToken(refreshTokenCreateDTO);
 
-        var newRefreshToken = refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate()
-        {
-            UserId = USER_ID_FOR_RT1,
-            FingerPrint = FINGER_PRINT_FOR_RT1
-        });
-
-        // проверяет по ссылке
-        mock.Verify(repo => repo.Insert(newRefreshToken));
-
-        Assert.True(true);
+        // Assert
+        mockRepo.Verify(rtr => rtr.Insert);
     }
 
     [Fact]

@@ -2,6 +2,8 @@ using TodoList.Extensions;
 
 namespace TodoList.Utils;
 
+
+// TODO: сделать его сервисом и юзать IConfiguration
 public static class CommonCookieOptions
 {
     public static CookieOptions Default => new()
