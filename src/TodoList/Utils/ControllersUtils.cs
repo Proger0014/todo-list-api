@@ -1,14 +1,15 @@
 using System.Security.Claims;
 using TodoList.Constants;
 using TodoList.Exceptions;
+using TodoList.Services;
 
 namespace TodoList.Utils;
 
 public static class ControllersUtils
 {
-    public static void DeleteRefreshTokenCookie(IResponseCookies cookies)
+    public static void DeleteRefreshTokenCookie(IResponseCookies cookies, AuthCookieOptions authCookieOptions)
     {
-        cookies.Delete(CommonConstants.REFRESH_TOKEN_NAME, CommonCookieOptions.Delete);
+        cookies.Delete(CommonConstants.REFRESH_TOKEN_NAME, authCookieOptions.Delete);
     }
 
     public static string GetExistingRefreshTokenId(IRequestCookieCollection cookies)

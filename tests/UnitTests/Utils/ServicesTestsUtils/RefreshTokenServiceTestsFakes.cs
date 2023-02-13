@@ -1,5 +1,7 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Configuration;
+using Moq;
 using TodoList.Models.RefreshToken;
+using TodoList.Services.DateTimeProvider;
 
 namespace UnitTests.Utils.ServicesTestsUtils;
 
@@ -23,5 +25,22 @@ public static class RefreshTokenServiceTestsFakes
             .Returns(refreshToken);
 
         return fake;
+    }
+
+    public static Mock<IDateTimeProvider> CreateDateTimeProviderFake(DateTime dateTime)
+    {
+        var fake = new Mock<IDateTimeProvider>();
+
+        fake.Setup(dtp => dtp.DateTimeNow)
+            .Returns(dateTime);
+
+        return fake;
+    }
+
+    public static IConfiguration CreateConfigurationFake(Dictionary<string, string> settings)
+    {
+        return new ConfigurationBuilder()
+            .AddInMemoryCollection(settings)
+            .Build();
     }
 }

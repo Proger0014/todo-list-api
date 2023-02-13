@@ -16,7 +16,9 @@ public static class ExceptionMessage
 
     // KeyNotFoundException
     public const string KEY_IS_NOT_FOUND_SETTING = "key {0:string} is not found in settings file {1:string}";
+    public const string IS_NOT_FOUND_SETTING = "setting {0:string} is not found in configuration";
     public const string CONNECTION_STRING_IS_NOT_FOUND = "connection string is not found in settings file {0:string}";
+
 
     // ExistsException
     public const string USER_IS_EXISTS = "user {0:string} is exists";

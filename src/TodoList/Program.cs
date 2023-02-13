@@ -8,6 +8,7 @@ using System.Text;
 using TodoList.Models.RefreshToken;
 using TodoList;
 using TodoList.Extensions;
+using TodoList.Services.DateTimeProvider;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<RefreshTokenService>();
+builder.Services.AddScoped<IDateTimeProvider, DefaultDateTimeProvider>();
+builder.Services.AddScoped<AuthCookieOptions>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // схема аутентификации с помощью jwt токенов

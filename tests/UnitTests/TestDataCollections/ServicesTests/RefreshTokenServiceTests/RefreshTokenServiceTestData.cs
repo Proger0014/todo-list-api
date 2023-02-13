@@ -2,9 +2,9 @@
 
 public class RefreshTokenServiceTestData
 {
-    public static IEnumerable<object[]> RefreshTokens { get; private set; } =
-        RefreshTokenServiceTestDataInit.RefreshTokensInit();
+    public static IEnumerable<object[]> RefreshTokensSuit { get; private set; } =
+        RefreshTokenServiceTestDataInit.RefreshTokensSuitInit();
 
-    public static IEnumerable<object[]> RefreshTokenCreateDTOs { get; private set; } =
-        RefreshTokenServiceTestDataInit.RefreshTokenCreateDTOsInit();
+    public static IEnumerable<object[]> CollectionDataForGenerateRefreshToken { get; private set; } =
+        RefreshTokenServiceTestDataInit.CollectionDataForGenerateRefreshTokenInit();
 }

@@ -1,18 +1,25 @@
 using TodoList.DTO.Token;
 using TodoList.Models.RefreshToken;
 using TodoList.Exceptions;
-using TodoList.Utils;
 using TodoList.Constants;
+using TodoList.Services.DateTimeProvider;
 
 namespace TodoList.Services;
 
 public class RefreshTokenService
 {
-    private IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly AuthCookieOptions _authCookieOptions;
 
-    public RefreshTokenService(IRefreshTokenRepository refreshTokenRepository)
+    public RefreshTokenService(
+        IRefreshTokenRepository refreshTokenRepository,
+        IDateTimeProvider dateTimeProvider,
+        AuthCookieOptions authCookieOptions)
     {
         _refreshTokenRepository = refreshTokenRepository;
+        _dateTimeProvider = dateTimeProvider;
+        _authCookieOptions = authCookieOptions;
     }
 
     public RefreshToken GetRefreshToken(string refreshToken)
@@ -41,15 +48,15 @@ public class RefreshTokenService
 
     public RefreshToken GenerateRefreshToken(RefreshTokenCreate refreshTokenCreate)
     {
-        int expires = CommonCookieOptions.MaxAgeRefreshToken();
+        int expires = _authCookieOptions.MaxAgeRefreshToken;
 
         var token = new RefreshToken()
         {
-            Id = Guid.NewGuid(),
+            Id = refreshTokenCreate.Id,
             UserId = refreshTokenCreate.UserId,
             FingerPrint = refreshTokenCreate.FingerPrint,
-            AddedTime = DateTime.Now,
-            ExpirationTime = DateTime.Now.Add(TimeSpan.FromMinutes(expires))
+            AddedTime = _dateTimeProvider.DateTimeNow,
+            ExpirationTime = _dateTimeProvider.DateTimeNow.Add(TimeSpan.FromMinutes(expires))
         };
 
         _refreshTokenRepository.Insert(token);

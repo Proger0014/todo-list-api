@@ -16,15 +16,18 @@ namespace TodoList.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class AuthController : ControllerBase
 {
-    private UserService _userService;
-    private RefreshTokenService _refreshTokenService;
+    private readonly UserService _userService;
+    private readonly RefreshTokenService _refreshTokenService;
+    private readonly AuthCookieOptions _authCookieOptions;
 
     public AuthController(
         UserService userService,
-        RefreshTokenService refreshTokenService)
+        RefreshTokenService refreshTokenService,
+        AuthCookieOptions authCookieOptions)
     {
         _userService = userService;
         _refreshTokenService = refreshTokenService;
+        _authCookieOptions = authCookieOptions;
     }
 
     [AllowAnonymous]
@@ -47,8 +50,8 @@ public class AuthController : ControllerBase
             FingerPrint = HttpContext.Request.Headers["User-Agent"].ToString()
         }).Id.ToString();
 
-        HttpContext.Response.Cookies.Append(CommonConstants.REFRESH_TOKEN_NAME, refreshToken, CommonCookieOptions.Default);
-        HttpContext.Response.Cookies.Append(CommonConstants.ACCESS_TOKEN_NAME, accessToken, CommonCookieOptions.Default);
+        HttpContext.Response.Cookies.Append(CommonConstants.REFRESH_TOKEN_NAME, refreshToken, _authCookieOptions.Default);
+        HttpContext.Response.Cookies.Append(CommonConstants.ACCESS_TOKEN_NAME, accessToken, _authCookieOptions.Default);
 
         return Ok(new TokenResponse()
         {
@@ -97,7 +100,7 @@ public class AuthController : ControllerBase
 
         _refreshTokenService.RemoveRefreshToken(currentRefreshToken);
 
-        ControllersUtils.DeleteRefreshTokenCookie(HttpContext.Response.Cookies);
+        ControllersUtils.DeleteRefreshTokenCookie(HttpContext.Response.Cookies, _authCookieOptions);
 
         var accessToken = user.GenerateJWT();
         var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate()
@@ -106,7 +109,7 @@ public class AuthController : ControllerBase
             FingerPrint = HttpContext.Request.Headers["User-Agent"].ToString()
         }).Id.ToString();
 
-        HttpContext.Response.Cookies.Append(CommonConstants.REFRESH_TOKEN_NAME, refreshToken, CommonCookieOptions.Default);
+        HttpContext.Response.Cookies.Append(CommonConstants.REFRESH_TOKEN_NAME, refreshToken, _authCookieOptions.Default);
 
         return Ok(new TokenResponse()
         {
@@ -124,7 +127,7 @@ public class AuthController : ControllerBase
 
         _refreshTokenService.RemoveRefreshToken(currentRefreshToken);
 
-        ControllersUtils.DeleteRefreshTokenCookie(HttpContext.Response.Cookies);
+        ControllersUtils.DeleteRefreshTokenCookie(HttpContext.Response.Cookies, _authCookieOptions);
 
         return Ok();
     }

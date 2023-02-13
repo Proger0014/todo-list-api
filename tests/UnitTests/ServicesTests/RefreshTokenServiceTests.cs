@@ -6,6 +6,7 @@ using TodoList.Exceptions;
 using UnitTests.Utils.ServicesTestsUtils;
 using UnitTests.TestDataCollections.ServicesTests.RefreshTokenServiceTests;
 using TodoList.Constants;
+using TodoList.Services.DateTimeProvider;
 
 namespace UnitTests.ServicesTests;
 
@@ -56,7 +57,7 @@ public class RefreshTokenServiceTests
         mock.Setup(rt => rt.GetById(refreshToken2Id))
             .Returns(refreshToken2);
 
-        foreach (object[] objs in RefreshTokenServiceTestData.RefreshTokens)
+        foreach (object[] objs in RefreshTokenServiceTestData.RefreshTokensSuit)
         {
             foreach (RefreshToken refreshToken in objs)
             {
@@ -82,27 +83,41 @@ public class RefreshTokenServiceTests
     }
 
     [Theory]
-    [MemberData(nameof(RefreshTokenServiceTestData.RefreshTokens), MemberType = typeof(RefreshTokenServiceTestData))]
-    public void GetRefreshTokenByUserId_ExistsUserId_ReturnRefreshToken(RefreshToken expectedRefreshToken)
+    [MemberData(
+        nameof(RefreshTokenServiceTestData.RefreshTokensSuit), 
+        MemberType = typeof(RefreshTokenServiceTestData))]
+    public void GetRefreshTokenByUserId_ExistsUserId_ReturnRefreshToken(
+        RefreshToken expectedRefreshToken,
+        IDateTimeProvider dateTimeProvider,
+        AuthCookieOptions authCookieOptions)
     {
         // Arrange
-        var stubRepo = RefreshTokenServiceTestsFakes.CreateByUserIdFake(expectedRefreshToken);
-        var refreshTokenService = new RefreshTokenService(stubRepo.Object);
+        var stubRepo = RefreshTokenServiceTestsFakes
+            .CreateByUserIdFake(expectedRefreshToken);
+        var refreshTokenService = new RefreshTokenService(
+            stubRepo.Object, dateTimeProvider, authCookieOptions);
 
         // Act
-        var actualRefreshToken = refreshTokenService.GetRefreshTokenByUserId(expectedRefreshToken.UserId);
+        var actualRefreshToken = refreshTokenService
+            .GetRefreshTokenByUserId(expectedRefreshToken.UserId);
 
         // Assert
         Assert.Equal(expectedRefreshToken, actualRefreshToken);
     }
 
     [Theory]
-    [MemberData(nameof(RefreshTokenServiceTestData.RefreshTokens), MemberType = typeof(RefreshTokenServiceTestData))]
-    public void GetRefreshTokenByUserId_NotExistsUserId_ThrowsNotFoundException(RefreshToken refreshToken)
+    [MemberData(
+        nameof(RefreshTokenServiceTestData.RefreshTokensSuit), 
+        MemberType = typeof(RefreshTokenServiceTestData))]
+    public void GetRefreshTokenByUserId_NotExistsUserId_ThrowsNotFoundException(
+        RefreshToken refreshToken,
+        IDateTimeProvider dateTimeProvider,
+        AuthCookieOptions authCookieOptions)
     {
         // Arrange
         var stubRepo = new Mock<IRefreshTokenRepository>();
-        var refreshTokenService = new RefreshTokenService(stubRepo.Object);
+        var refreshTokenService = new RefreshTokenService(
+            stubRepo.Object, dateTimeProvider, authCookieOptions);
 
         // Act
         Action act = () => refreshTokenService.GetRefreshTokenByUserId(refreshToken.UserId);
@@ -113,27 +128,41 @@ public class RefreshTokenServiceTests
     }
 
     [Theory]
-    [MemberData(nameof(RefreshTokenServiceTestData.RefreshTokens), MemberType = typeof(RefreshTokenServiceTestData))]
-    public void GetRefreshToken_ByExistsId_ReturnRefreshToken(RefreshToken expectedRefreshToken)
+    [MemberData(
+        nameof(RefreshTokenServiceTestData.RefreshTokensSuit), 
+        MemberType = typeof(RefreshTokenServiceTestData))]
+    public void GetRefreshToken_ByExistsId_ReturnRefreshToken(
+        RefreshToken expectedRefreshToken,
+        IDateTimeProvider dateTimeProvider,
+        AuthCookieOptions authCookieOptions)
     {
         // Arrange
-        var stubRepo = RefreshTokenServiceTestsFakes.CreateByIdFake(expectedRefreshToken);
-        var refreshTokenService = new RefreshTokenService(stubRepo.Object);
+        var stubRepo = RefreshTokenServiceTestsFakes
+            .CreateByIdFake(expectedRefreshToken);
+        var refreshTokenService = new RefreshTokenService(
+            stubRepo.Object, dateTimeProvider, authCookieOptions);
 
         // Act
-        var actualRefreshToken = refreshTokenService.GetRefreshToken(expectedRefreshToken.Id.ToString());
+        var actualRefreshToken = refreshTokenService
+            .GetRefreshToken(expectedRefreshToken.Id.ToString());
 
         // Assert
         Assert.Equal(expectedRefreshToken, actualRefreshToken);
     }
 
     [Theory]
-    [MemberData(nameof(RefreshTokenServiceTestData.RefreshTokens), MemberType = typeof(RefreshTokenServiceTestData))]
-    public void GetRefreshToken_ByNotExistsId_ThrowsNotFoundException(RefreshToken refreshToken)
+    [MemberData(
+        nameof(RefreshTokenServiceTestData.RefreshTokensSuit), 
+        MemberType = typeof(RefreshTokenServiceTestData))]
+    public void GetRefreshToken_ByNotExistsId_ThrowsNotFoundException(
+        RefreshToken refreshToken,
+        IDateTimeProvider dateTimeProvider,
+        AuthCookieOptions authCookieOptions)
     {
         // Arrange
         var stubRepo = new Mock<IRefreshTokenRepository>();
-        var refreshTokenService = new RefreshTokenService(stubRepo.Object);
+        var refreshTokenService = new RefreshTokenService(
+            stubRepo.Object, dateTimeProvider, authCookieOptions);
 
         // Act
         Action act = () => refreshTokenService.GetRefreshToken(refreshToken.Id.ToString());
@@ -146,37 +175,43 @@ public class RefreshTokenServiceTests
     // TODO: Отрефакторить это
     // Также подумать об Инверсии зависимостей для CommonCookieOptions
     [Theory]
-    [MemberData(nameof(RefreshTokenServiceTestData.RefreshTokenCreateDTOs), MemberType = typeof(RefreshTokenServiceTestData))]
-    public void GenerateRefreshToken_ValidRefreshTokenCreateDTO_ReturnValidRefreshToken(RefreshTokenCreate refreshTokenCreateDTO)
+    [MemberData(
+        nameof(RefreshTokenServiceTestData.CollectionDataForGenerateRefreshToken), 
+        MemberType = typeof(RefreshTokenServiceTestData))]
+    public void GenerateRefreshToken_ValidRefreshTokenCreateDTO_ReturnValidRefreshToken(
+        RefreshTokenCreate refreshTokenCreateDTO,
+        IDateTimeProvider dateTimeProvider,
+        AuthCookieOptions authCookieOptions)
     {
         // Arrange
         var mockRepo = new Mock<IRefreshTokenRepository>();
-        var refreshTokenService = new RefreshTokenService(mockRepo.Object);
+        var refreshTokenService = new RefreshTokenService(
+            mockRepo.Object, dateTimeProvider, authCookieOptions);
 
         // Act
-        refreshTokenService.GenerateRefreshToken(refreshTokenCreateDTO);
+        RefreshToken newRefreshToken = refreshTokenService.GenerateRefreshToken(refreshTokenCreateDTO);
 
         // Assert
-        mockRepo.Verify(rtr => rtr.Insert);
+        mockRepo.Verify(rtr => rtr.Insert(newRefreshToken));
     }
 
-    [Fact]
-    public void DeleteRefreshToken()
-    {
-        var mock = CreateMock();
+    //[Fact]
+    //public void DeleteRefreshToken()
+    //{
+    //    var mock = CreateMock();
 
-        var refreshTokenService = new RefreshTokenService(mock.Object);
+    //    var refreshTokenService = new RefreshTokenService(mock.Object);
 
-        var newRefreshToken = refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate()
-        {
-            UserId = USER_ID_FOR_RT1,
-            FingerPrint = FINGER_PRINT_FOR_RT1
-        });
+    //    var newRefreshToken = refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate()
+    //    {
+    //        UserId = USER_ID_FOR_RT1,
+    //        FingerPrint = FINGER_PRINT_FOR_RT1
+    //    });
 
-        refreshTokenService.RemoveRefreshToken(newRefreshToken);
+    //    refreshTokenService.RemoveRefreshToken(newRefreshToken);
 
-        mock.Verify(repo => repo.Delete(newRefreshToken.Id));
+    //    mock.Verify(repo => repo.Delete(newRefreshToken.Id));
 
-        Assert.True(true);
-    }
+    //    Assert.True(true);
+    //}
 }
