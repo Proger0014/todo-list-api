@@ -1,87 +1,17 @@
-﻿using Moq;
-using TodoList.Models.RefreshToken;
-using TodoList.DTO.Token;
-using TodoList.Services;
-using TodoList.Exceptions;
+﻿using UnitTests.TestDataCollections.ServicesTests.RefreshTokenServiceTests;
 using UnitTests.Utils.ServicesTestsUtils;
-using UnitTests.TestDataCollections.ServicesTests.RefreshTokenServiceTests;
-using TodoList.Constants;
 using TodoList.Services.DateTimeProvider;
+using TodoList.Models.RefreshToken;
+using TodoList.Exceptions;
+using TodoList.DTO.Token;
+using TodoList.Constants;
+using TodoList.Services;
+using Moq;
 
 namespace UnitTests.ServicesTests;
 
 public class RefreshTokenServiceTests
 {
-    // Плохо, потому что одно состояние для нескольких тестов 
-    private static readonly DateTime ADDED_TIME_FOR_RT1 = new DateTime(2023, 1, 1);
-    private static readonly DateTime EXPIRATION_TIME_FOR_RT1 = ADDED_TIME_FOR_RT1.AddMinutes(1);
-    private const int USER_ID_FOR_RT1 = 1;
-    private const string FINGER_PRINT_FOR_RT1 = "finger_print1";
-    private const string REFRESH_TOKEN1_ID_STRING = "12222222-2222-2222-2222-222222222222";
-
-    private static readonly DateTime ADDED_TIME_FOR_RT2 = ADDED_TIME_FOR_RT1.AddDays(2);
-    private static readonly DateTime EXPIRATION_TIME_FOR_RT2 = ADDED_TIME_FOR_RT1.AddDays(3);
-    private const int USER_ID_FOR_RT2 = 2;
-    private const string FINGER_PRINT_FOR_RT2 = "finger_print2";
-    private const string REFRESH_TOKEN2_ID_STRING = "21111111-1111-1111-1111-111111111111";
-
-    private const string NOT_EXISTS_RT_ID_STRING = "21111111-1111-1111-1111-211311111111";
-    private const int NOT_EXISTS_USER_ID_FOR_RT = 3;
-
-    // exception messages
-    private const string REFRESH_TOKEN_NOT_FOUND = "refresh token not found";
-
-    private Mock<IRefreshTokenRepository> CreateMock()
-    {   
-        var mock = new Mock<IRefreshTokenRepository>();
-
-        var targetDate = new DateTime(2023, 1, 1);
-
-        var refreshToken1Id = Guid.Parse(REFRESH_TOKEN1_ID_STRING);
-        var refreshToken2Id = Guid.Parse(REFRESH_TOKEN2_ID_STRING);
-
-        var refreshToken1 = new RefreshToken(refreshToken1Id, USER_ID_FOR_RT1,
-            FINGER_PRINT_FOR_RT1, ADDED_TIME_FOR_RT1, EXPIRATION_TIME_FOR_RT1);
-        var refreshToken2 = new RefreshToken(refreshToken2Id, USER_ID_FOR_RT2,
-            FINGER_PRINT_FOR_RT2, ADDED_TIME_FOR_RT2, EXPIRATION_TIME_FOR_RT2);
-
-        mock.Setup(rt => rt.GetByUserId(USER_ID_FOR_RT1))
-            .Returns(refreshToken1);
-
-        mock.Setup(rt => rt.GetById(refreshToken1Id))
-            .Returns(refreshToken1);
-
-        mock.Setup(rt => rt.GetByUserId(USER_ID_FOR_RT2))
-            .Returns(refreshToken2);
-
-        mock.Setup(rt => rt.GetById(refreshToken2Id))
-            .Returns(refreshToken2);
-
-        foreach (object[] objs in RefreshTokenServiceTestData.RefreshTokensSuit)
-        {
-            foreach (RefreshToken refreshToken in objs)
-            {
-                mock.Setup(rt => rt.GetById(refreshToken.Id))
-                    .Returns(refreshToken);
-                mock.Setup(rt => rt.GetByUserId(refreshToken.UserId))
-                    .Returns(refreshToken);
-            }
-        }
-
-        return mock;
-    }
-
-    // T - is type of exception
-    private void TestTemplateWithThrowsException<T>(
-        Action guessAction, 
-        RefreshTokenService refreshTokenService,
-        string expectedExceptionMessage)
-        where T : Exception
-    {
-        T exception = Assert.Throws<T>(guessAction);
-        Assert.Equal(expectedExceptionMessage, exception.Message);
-    }
-
     [Theory]
     [MemberData(
         nameof(RefreshTokenServiceTestData.RefreshTokensSuit), 
@@ -172,8 +102,6 @@ public class RefreshTokenServiceTests
         Assert.Equal(ExceptionMessage.REFRESH_TOKEN_NOT_FOUND, actualException.Message);
     }
 
-    // TODO: Отрефакторить это
-    // Также подумать об Инверсии зависимостей для CommonCookieOptions
     [Theory]
     [MemberData(
         nameof(RefreshTokenServiceTestData.CollectionDataForGenerateRefreshToken), 
@@ -189,29 +117,32 @@ public class RefreshTokenServiceTests
             mockRepo.Object, dateTimeProvider, authCookieOptions);
 
         // Act
-        RefreshToken newRefreshToken = refreshTokenService.GenerateRefreshToken(refreshTokenCreateDTO);
+        RefreshToken newRefreshToken = refreshTokenService
+            .GenerateRefreshToken(refreshTokenCreateDTO);
 
         // Assert
         mockRepo.Verify(rtr => rtr.Insert(newRefreshToken));
     }
 
-    //[Fact]
-    //public void DeleteRefreshToken()
-    //{
-    //    var mock = CreateMock();
+    [Theory]
+    [MemberData(
+        nameof(RefreshTokenServiceTestData.RefreshTokensSuit),
+        MemberType = typeof(RefreshTokenServiceTestData))]
+    public void RemoveRefreshToken_ValidRefreshTokenId_Removed(
+        RefreshToken refreshTokenForRemove,
+        IDateTimeProvider dateTimeProvider,
+        AuthCookieOptions authCookieOptions)
+    {
+        // Arrange
+        var mockRepo = new Mock<IRefreshTokenRepository>();
 
-    //    var refreshTokenService = new RefreshTokenService(mock.Object);
+        var refreshTokenService = new RefreshTokenService(
+            mockRepo.Object, dateTimeProvider, authCookieOptions);
 
-    //    var newRefreshToken = refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate()
-    //    {
-    //        UserId = USER_ID_FOR_RT1,
-    //        FingerPrint = FINGER_PRINT_FOR_RT1
-    //    });
+        // Act
+        refreshTokenService.RemoveRefreshToken(refreshTokenForRemove);
 
-    //    refreshTokenService.RemoveRefreshToken(newRefreshToken);
-
-    //    mock.Verify(repo => repo.Delete(newRefreshToken.Id));
-
-    //    Assert.True(true);
-    //}
+        // Assert
+        mockRepo.Verify(repo => repo.Delete(refreshTokenForRemove.Id));
+    }
 }
