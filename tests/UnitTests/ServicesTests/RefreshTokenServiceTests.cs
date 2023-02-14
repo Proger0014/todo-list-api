@@ -14,8 +14,8 @@ public class RefreshTokenServiceTests
 {
     [Theory]
     [MemberData(
-        nameof(RefreshTokenServiceTestData.RefreshTokensSuit), 
-        MemberType = typeof(RefreshTokenServiceTestData))]
+        nameof(RefreshTokenServiceTestsData.RefreshTokensSuit), 
+        MemberType = typeof(RefreshTokenServiceTestsData))]
     public void GetRefreshTokenByUserId_ExistsUserId_ReturnRefreshToken(
         RefreshToken expectedRefreshToken,
         IDateTimeProvider dateTimeProvider,
@@ -37,8 +37,8 @@ public class RefreshTokenServiceTests
 
     [Theory]
     [MemberData(
-        nameof(RefreshTokenServiceTestData.RefreshTokensSuit), 
-        MemberType = typeof(RefreshTokenServiceTestData))]
+        nameof(RefreshTokenServiceTestsData.RefreshTokensSuit), 
+        MemberType = typeof(RefreshTokenServiceTestsData))]
     public void GetRefreshTokenByUserId_NotExistsUserId_ThrowsNotFoundException(
         RefreshToken refreshToken,
         IDateTimeProvider dateTimeProvider,
@@ -59,8 +59,8 @@ public class RefreshTokenServiceTests
 
     [Theory]
     [MemberData(
-        nameof(RefreshTokenServiceTestData.RefreshTokensSuit), 
-        MemberType = typeof(RefreshTokenServiceTestData))]
+        nameof(RefreshTokenServiceTestsData.RefreshTokensSuit), 
+        MemberType = typeof(RefreshTokenServiceTestsData))]
     public void GetRefreshToken_ByExistsId_ReturnRefreshToken(
         RefreshToken expectedRefreshToken,
         IDateTimeProvider dateTimeProvider,
@@ -82,8 +82,8 @@ public class RefreshTokenServiceTests
 
     [Theory]
     [MemberData(
-        nameof(RefreshTokenServiceTestData.RefreshTokensSuit), 
-        MemberType = typeof(RefreshTokenServiceTestData))]
+        nameof(RefreshTokenServiceTestsData.RefreshTokensSuit), 
+        MemberType = typeof(RefreshTokenServiceTestsData))]
     public void GetRefreshToken_ByNotExistsId_ThrowsNotFoundException(
         RefreshToken refreshToken,
         IDateTimeProvider dateTimeProvider,
@@ -104,8 +104,8 @@ public class RefreshTokenServiceTests
 
     [Theory]
     [MemberData(
-        nameof(RefreshTokenServiceTestData.CollectionDataForGenerateRefreshToken), 
-        MemberType = typeof(RefreshTokenServiceTestData))]
+        nameof(RefreshTokenServiceTestsData.CollectionDataForGenerateRefreshToken), 
+        MemberType = typeof(RefreshTokenServiceTestsData))]
     public void GenerateRefreshToken_ValidRefreshTokenCreateDTO_ReturnValidRefreshToken(
         RefreshTokenCreate refreshTokenCreateDTO,
         IDateTimeProvider dateTimeProvider,
@@ -126,8 +126,8 @@ public class RefreshTokenServiceTests
 
     [Theory]
     [MemberData(
-        nameof(RefreshTokenServiceTestData.RefreshTokensSuit),
-        MemberType = typeof(RefreshTokenServiceTestData))]
+        nameof(RefreshTokenServiceTestsData.RefreshTokensSuit),
+        MemberType = typeof(RefreshTokenServiceTestsData))]
     public void RemoveRefreshToken_ValidRefreshTokenId_Removed(
         RefreshToken refreshTokenForRemove,
         IDateTimeProvider dateTimeProvider,

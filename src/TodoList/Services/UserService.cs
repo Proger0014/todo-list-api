@@ -2,7 +2,6 @@ using TodoList.DTO.User;
 using TodoList.Models.User;
 using TodoList.Exceptions;
 using TodoList.Constants;
-using System.Security.Claims;
 using TodoList.Utils;
 
 namespace TodoList.Services;

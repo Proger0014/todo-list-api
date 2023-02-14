@@ -7,7 +7,7 @@ using UnitTests.Utils.ServicesTestsUtils;
 
 namespace UnitTests.TestDataCollections.ServicesTests.RefreshTokenServiceTests;
 
-internal class RefreshTokenServiceTestDataInit
+internal class RefreshTokenServiceTestsDataInit
 {
     internal static IEnumerable<object[]> RefreshTokensSuitInit()
     {

@@ -5,7 +5,7 @@ using TodoList.Models.Id;
 namespace TodoList.Models.User;
 
 [Table("users", Schema = "public")]
-public class User : ID<long>, ICloneable
+public class User : ID<long>, IEquatable<User>
 {
     [Key, Column("id"), DataType("bigserial")]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -54,12 +54,16 @@ public class User : ID<long>, ICloneable
             Password.GetHashCode();
     }
 
-    public object Clone() =>
-        new User()
-        {
-            Id = Id,
-            NickName = (string)NickName.Clone(),
-            Login = (string)Login.Clone(),
-            Password = (string)Password.Clone()
-        };
+    public bool Equals(User? other)
+    {
+        if (other == null) return false;
+        if (other == this) return true;
+
+        if (other.Id == Id &&
+            other.Login == Login &&
+            other.NickName == NickName &&
+            other.Password == Password) return true;
+
+        return false;
+    }
 }

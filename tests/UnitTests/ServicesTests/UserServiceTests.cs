@@ -1,61 +1,58 @@
 ﻿using Moq;
-using System.Security.Claims;
+using TodoList.Constants;
 using TodoList.DTO.User;
+using TodoList.Exceptions;
 using TodoList.Models.User;
 using TodoList.Services;
+using UnitTests.TestDataCollections.ServicesTests.UserServiceTests;
+using UnitTests.Utils.ServicesTestsUtils;
 
 namespace UnitTests.ServicesTests;
 
 public class UserServiceTests
 {
-    private const string USER_1_ID = "1";
-    private readonly User USER_1 = new User() 
+    [Theory]
+    [MemberData(
+        nameof(UserServiceTestsData.UserAccessDeniedCheckSuitCollection),
+        MemberType = typeof(UserServiceTestsData))]
+    public void GetUserWithAccessDeniedCheck_ExistingIdInClaim_ReturnUser(
+        UserAccessDeniedCheck userAccessDeniedCheck,
+        User expectedUser)
     {
-        Id = 1,
-        NickName = "user1",
-        Login = "login-user1",
-        Password = "password-user1"
-    };
+        // Arrange
+        var stubRepo = UserServiceTestsFakes.CreateGetByIdFake(
+            userAccessDeniedCheck, expectedUser).Object;
 
-    private const string USER_2_ID = "2";
-    private readonly User USER_2 = new User()
-    {
-        Id = 2,
-        NickName = "user2",
-        Login = "login-user2",
-        Password = "password-user2"
-    };
+        var userService = new UserService(stubRepo);
 
-    private Mock<IUserRepository> CreateMock()
-    {
-        var mock = new Mock<IUserRepository>();
+        // Act
+        User actualUser = userService.GetUserWithAccessDeniedCheck(
+            userAccessDeniedCheck);
 
-        mock.Setup(ur => ur.GetById(USER_1.Id))
-            .Returns(USER_1);
-
-        mock.Setup(ur => ur.GetById(USER_2.Id))
-            .Returns(USER_2);
-
-        return mock;
-    }
-
-    [Fact]
-    public void GetUserWithAccessDeniedCheck_ExistingIdInClaim_ReturnUser()
-    {
-        var userService = new UserService(CreateMock().Object);
-
-        var accessDeniedCheck = new UserAccessDeniedCheck()
-        {
-            UserClaims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.NameIdentifier, USER_1_ID)
-            },
-            UserId = USER_1.Id
-        };
-
-        var expectedUser = (User)USER_1.Clone();
-        var actualUser = userService.GetUserWithAccessDeniedCheck(accessDeniedCheck);
-
+        // Assert
         Assert.Equal(expectedUser, actualUser);
     }
+
+    [Theory]
+    [MemberData(
+        nameof(UserServiceTestsData.UserAccessDeniedCheckCollection),
+        MemberType = typeof(UserServiceTestsData))]
+    public void GetUserWithAccessDeniedCheck_NotExistsUserIdInClaim_ThrowsNotFoundException(
+        UserAccessDeniedCheck userAccessDeniedCheck)
+    {
+        // Arrange
+        var stubRepo = new Mock<IUserRepository>().Object;
+        var userService = new UserService(stubRepo);
+
+        // Act
+        Action act = () => { userService.GetUserWithAccessDeniedCheck(userAccessDeniedCheck); };
+
+        // Assert
+        NotFoundException expectedException = Assert.Throws<NotFoundException>(act);
+        Assert.Equal(expectedException.Message, string.Format(
+            ExceptionMessage.USER_NOT_FOUND_WITH_ID, 
+            userAccessDeniedCheck.UserId));
+    }
+
+    // TODO: отрефакторить GetUserWithAccessDeniedCheck: Выполнить TODO в нем
 }
