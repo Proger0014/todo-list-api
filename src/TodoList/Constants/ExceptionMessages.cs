@@ -7,6 +7,7 @@ public static class ExceptionMessage
 
     // AccessDeniedException
     public const string ACCESS_DENIED = "not authorize";
+    public const string ACCESS_DENIED_FOR_ANOTHER_USER_DATA = "access denied for getting data another user";
 
     // NotFoundException
     public const string REFRESH_TOKEN_NOT_FOUND = "refresh token not found";

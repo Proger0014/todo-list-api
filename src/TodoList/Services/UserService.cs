@@ -17,19 +17,18 @@ public class UserService
 
     public User GetUserWithAccessDeniedCheck(UserAccessDeniedCheck accessDeniedCheck)
     {
+        var userIdFromPayload = ControllersUtils.GetUserIdFromPayload(accessDeniedCheck.UserClaims);
+
+        if (userIdFromPayload != accessDeniedCheck.UserId)
+        {
+            throw new AccessDeniedException(ExceptionMessage.ACCESS_DENIED_FOR_ANOTHER_USER_DATA);
+        }
+
         var existsUser = _userRepository.GetById(accessDeniedCheck.UserId);
 
         if (existsUser == null)
         {
             throw new NotFoundException(string.Format(ExceptionMessage.USER_NOT_FOUND_WITH_ID, accessDeniedCheck.UserId));
-        }
-
-        var userIdFromPayload = ControllersUtils.GetUserIdFromPayload(accessDeniedCheck.UserClaims);
-
-        if (userIdFromPayload != accessDeniedCheck.UserId)
-        {
-            // TODO: Нормальное описание сюда добавить
-            throw new AccessDeniedException();
         }
 
         return existsUser;

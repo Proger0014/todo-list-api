@@ -6,7 +6,7 @@ namespace UnitTests.TestDataCollections.ServicesTests.UserServiceTests;
 
 internal class UserServiceTestsDataInit
 {
-    public static IEnumerable<object[]> UserAccessDeniedCheckCollectionInit()
+    internal static IEnumerable<object[]> UserAccessDeniedCheckCollectionInit()
     {
         const int MAX_COUNT = 2;
 
@@ -32,7 +32,7 @@ internal class UserServiceTestsDataInit
         return userAccessDeniedCheckCollection;
     }
 
-    public static IEnumerable<object[]> UserAccessDeniedCheckSuitCollectionInit()
+    internal static IEnumerable<object[]> UserAccessDeniedCheckSuitCollectionInit()
     {
         const int MAX_COUNT = 2;
 
@@ -40,7 +40,7 @@ internal class UserServiceTestsDataInit
 
         for (int i = 0; i < MAX_COUNT; i++)
         {
-            var claims = new List<Claim>
+            var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.NameIdentifier, i.ToString())
             };
@@ -63,5 +63,31 @@ internal class UserServiceTestsDataInit
         }
 
         return userAccessDeniecCheckSuitCollection;
+    }
+
+    internal static IEnumerable<object[]> UserAccessDeniedCheckWithAnotherUserIdCollectionInit()
+    {
+        const int MAX_COUNT = 2;
+
+        var userAccessDeniedCheckWithAnotherUserIdCollection = new List<object[]>();
+
+        for (int i = 0; i < MAX_COUNT; i++)
+        {
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier, i.ToString())
+            };
+
+            userAccessDeniedCheckWithAnotherUserIdCollection.Add(new object[]
+            {
+                new UserAccessDeniedCheck()
+                {
+                    UserId = i + MAX_COUNT,
+                    UserClaims = claims
+                }
+            });
+        }
+
+        return userAccessDeniedCheckWithAnotherUserIdCollection;
     }
 }

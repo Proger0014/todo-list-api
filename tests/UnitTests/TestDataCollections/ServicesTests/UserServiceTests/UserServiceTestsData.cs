@@ -7,4 +7,7 @@ public class UserServiceTestsData
 
     public static IEnumerable<object[]> UserAccessDeniedCheckCollection { get; private set; } =
         UserServiceTestsDataInit.UserAccessDeniedCheckCollectionInit();
+
+    public static IEnumerable<object[]> UserAccessDeniedCheckWithAnotherUserIdCollection { get; private set; } =
+        UserServiceTestsDataInit.UserAccessDeniedCheckWithAnotherUserIdCollectionInit();
 }

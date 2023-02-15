@@ -48,11 +48,31 @@ public class UserServiceTests
         Action act = () => { userService.GetUserWithAccessDeniedCheck(userAccessDeniedCheck); };
 
         // Assert
-        NotFoundException expectedException = Assert.Throws<NotFoundException>(act);
-        Assert.Equal(expectedException.Message, string.Format(
+        NotFoundException actualException = Assert.Throws<NotFoundException>(act);
+        Assert.Equal(string.Format(
             ExceptionMessage.USER_NOT_FOUND_WITH_ID, 
-            userAccessDeniedCheck.UserId));
+            userAccessDeniedCheck.UserId), 
+            actualException.Message);
     }
 
-    // TODO: отрефакторить GetUserWithAccessDeniedCheck: Выполнить TODO в нем
+    [Theory]
+    [MemberData(
+        nameof(UserServiceTestsData.UserAccessDeniedCheckWithAnotherUserIdCollection),
+        MemberType = typeof(UserServiceTestsData))]
+    public void GetUserWithAccessDeniedCheck_AnotherUserIdAccessDeniedCheck_ThrowsAccessDeniedCheck(
+        UserAccessDeniedCheck userAccessDeniedCheck)
+    {
+        // Arrage
+        var stubRepo = new Mock<IUserRepository>().Object;
+        var userService = new UserService(stubRepo);
+
+        // Act
+        Action act = () => { userService.GetUserWithAccessDeniedCheck(userAccessDeniedCheck); };
+
+        // Assert
+        AccessDeniedException actualException = Assert.Throws<AccessDeniedException>(act);
+        Assert.Equal(
+            ExceptionMessage.ACCESS_DENIED_FOR_ANOTHER_USER_DATA, 
+            actualException.Message);
+    }
 }
