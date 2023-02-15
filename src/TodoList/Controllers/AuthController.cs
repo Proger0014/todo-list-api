@@ -8,6 +8,7 @@ using TodoList.Utils;
 using TodoList.Exceptions;
 using TodoList.Constants;
 using System.Security.Claims;
+using TodoList.Models.User;
 
 namespace TodoList.Controllers;
 
@@ -19,22 +20,25 @@ public class AuthController : ControllerBase
     private readonly UserService _userService;
     private readonly RefreshTokenService _refreshTokenService;
     private readonly AuthCookieOptions _authCookieOptions;
+    private readonly TokensService _tokensService;
 
     public AuthController(
         UserService userService,
         RefreshTokenService refreshTokenService,
-        AuthCookieOptions authCookieOptions)
+        AuthCookieOptions authCookieOptions,
+        TokensService tokensService)
     {
         _userService = userService;
         _refreshTokenService = refreshTokenService;
         _authCookieOptions = authCookieOptions;
+        _tokensService = tokensService;
     }
 
     [AllowAnonymous]
     [HttpPost("login")]
     public IActionResult Login([FromBody] UserLoginRequest login)
     {
-        Models.User.User user = _userService.GetUserByLogin(login);
+        User user = _userService.GetUserByLogin(login);
 
         try
         {
@@ -43,7 +47,7 @@ public class AuthController : ControllerBase
         }
         catch (Exception) { }
 
-        var accessToken = user.GenerateJWT();
+        var accessToken = _tokensService.CreateJWT(user);
         var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate()
         {
             UserId = user.Id,
@@ -102,7 +106,7 @@ public class AuthController : ControllerBase
 
         ControllersUtils.DeleteRefreshTokenCookie(HttpContext.Response.Cookies, _authCookieOptions);
 
-        var accessToken = user.GenerateJWT();
+        var accessToken = _tokensService.CreateJWT(user);
         var refreshToken = _refreshTokenService.GenerateRefreshToken(new RefreshTokenCreate()
         {
             UserId = user.Id,
