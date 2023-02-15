@@ -90,4 +90,89 @@ internal class UserServiceTestsDataInit
 
         return userAccessDeniedCheckWithAnotherUserIdCollection;
     }
+
+    internal static IEnumerable<object[]> UserLoginRequestDTOSuitCollectionInit()
+    {
+        const int MAX_COUNT = 2;
+
+        var userLoginRequestDTOSuitCollection = new List<object[]>();
+
+        for (int i = 0; i < MAX_COUNT; i++)
+        {
+            string login = $"some-user-{i}-login";
+            string password = $"some-user-{i}-password";
+
+            userLoginRequestDTOSuitCollection.Add(new object[]
+            {
+                new UserLoginRequest()
+                {
+                    Login = login,
+                    Password = password
+                },
+                new User()
+                {
+                    Id = i,
+                    NickName = $"some-user-{i}-nickname",
+                    Login = login,
+                    Password = password
+                }
+            });
+        }
+
+        return userLoginRequestDTOSuitCollection;
+    }
+
+    internal static IEnumerable<object[]> UserLoginRequestDTOCollectionInit()
+    {
+        const int MAX_COUNT = 2;
+
+        var userLoginRequestDTOCollection = new List<object[]>();
+
+        for (int i = 0; i < MAX_COUNT; i++)
+        {
+            userLoginRequestDTOCollection.Add(new object[]
+            {
+                new UserLoginRequest()
+                {
+                    Login = $"some-user-{i}-login",
+                    Password = $"some-user-{i}-password"
+                }
+            });
+        }
+
+        return userLoginRequestDTOCollection;
+    }
+
+    internal static IEnumerable<object[]> UserRegisterRequestDTOSuitCollectionInit()
+    {
+        const int MAX_COUNT = 2;
+
+        var userRegisterRequestDTOCollection = new List<object[]>();
+
+        for (int i = 0; i < MAX_COUNT; i++)
+        {
+            string nickName = $"some-user-{i}-nickname";
+            string login = $"some-user-{i}-login";
+            string password = $"some-user-{i}-password";
+
+            userRegisterRequestDTOCollection.Add(new object[]
+            {
+                new UserRegisterRequest()
+                {
+                    Nickname = nickName,
+                    Login = login,
+                    Password = password
+                },
+                new User()
+                {
+                    Id = 0,
+                    NickName = nickName,
+                    Login = login,
+                    Password = password
+                }
+            });
+        }
+
+        return userRegisterRequestDTOCollection;
+    }
 }

@@ -57,8 +57,6 @@ public class User : ID<long>, IEquatable<User>
     public bool Equals(User? other)
     {
         if (other == null) return false;
-        if (other == this) return true;
-
         if (other.Id == Id &&
             other.Login == Login &&
             other.NickName == NickName &&
