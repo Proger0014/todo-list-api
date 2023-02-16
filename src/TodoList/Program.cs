@@ -23,6 +23,7 @@ builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<RefreshTokenService>();
 builder.Services.AddScoped<IDateTimeProvider, DefaultDateTimeProvider>();
 builder.Services.AddScoped<AuthCookieOptions>();
+builder.Services.AddScoped<TokensService>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // схема аутентификации с помощью jwt токенов
