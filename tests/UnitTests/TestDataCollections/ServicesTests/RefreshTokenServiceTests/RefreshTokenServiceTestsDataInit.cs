@@ -3,6 +3,7 @@ using TodoList.DTO.Token;
 using TodoList.Models.RefreshToken;
 using TodoList.Services;
 using TodoList.Services.DateTimeProvider;
+using UnitTests.Utils;
 using UnitTests.Utils.ServicesTestsUtils;
 
 namespace UnitTests.TestDataCollections.ServicesTests.RefreshTokenServiceTests;
@@ -21,7 +22,7 @@ internal class RefreshTokenServiceTestsDataInit
         var refreshTokens = new List<object[]>();
         IDateTimeProvider dateTimeProviderFake = RefreshTokenServiceTestsFakes
             .CreateDateTimeProviderFake(DateTime.Now).Object;
-        IConfiguration configurationFake = RefreshTokenServiceTestsFakes.CreateConfigurationFake(settings);
+        IConfiguration configurationFake = CommonUtils.CreateConfigurationFake(settings);
         var authCookieOptions = new AuthCookieOptions(configurationFake, dateTimeProviderFake);
 
         for (int i = 0; i < MAX_COUNT; i++)
@@ -52,7 +53,7 @@ internal class RefreshTokenServiceTestsDataInit
         {
             ["Jwt:RefreshToken:MaxAge"] = "2"
         };
-        var configurationFake = RefreshTokenServiceTestsFakes.CreateConfigurationFake(settings);
+        var configurationFake = CommonUtils.CreateConfigurationFake(settings);
 
         var collectionDataForGenerateRefreshToken = new List<object[]>();
 

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using TodoList.Services;
 using TodoList.DTO.User;
 using TodoList.DTO.Token;
-using TodoList.Extensions;
 using TodoList.Utils;
 using TodoList.Exceptions;
 using TodoList.Constants;

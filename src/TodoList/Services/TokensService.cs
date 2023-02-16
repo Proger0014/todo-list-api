@@ -4,8 +4,9 @@ using System.Security.Claims;
 using System.Text;
 using TodoList.Models.User;
 
-namespace TodoList.Extensions;
+namespace TodoList.Services;
 
+// TODO: добавить в DI container
 public class TokensService
 {
     private readonly IConfiguration _configuration;

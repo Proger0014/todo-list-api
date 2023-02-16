@@ -36,11 +36,4 @@ public static class RefreshTokenServiceTestsFakes
 
         return fake;
     }
-
-    public static IConfiguration CreateConfigurationFake(Dictionary<string, string> settings)
-    {
-        return new ConfigurationBuilder()
-            .AddInMemoryCollection(settings)
-            .Build();
-    }
 }
