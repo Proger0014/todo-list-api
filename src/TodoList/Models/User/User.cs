@@ -21,7 +21,6 @@ public class User : ID<long>, IEquatable<User>
 
     public User() 
     {
-        Id = 0;
         NickName = "";
         Login = "";
         Password = "";

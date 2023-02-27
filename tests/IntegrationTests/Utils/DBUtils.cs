@@ -17,13 +17,13 @@ public static class DBUtils
         var scopedServices = scope.ServiceProvider;
         var dbContext = scopedServices.GetRequiredService<PostgresqlDbContext>();
 
-        dbContext.Database.EnsureCreated();
-
         ReinitializeDbForTests(dbContext);
     }
 
     public static void InitializeDbForTests(IApplicationDbContext db)
     {
+        db.Database.EnsureCreated();
+
         var seedings = DatabaseSeedingDataCollection.DatabaseSeedings;
 
         foreach (var seedingList in seedings)
@@ -51,8 +51,10 @@ public static class DBUtils
     }
     public static void ReinitializeDbForTests(IApplicationDbContext db)
     {
-        db.Database.ExecuteSqlRaw("TRUNCATE TABLE \"public\".refresh_tokens;");
-        db.Database.ExecuteSqlRaw("TRUNCATE TABLE \"public\".users CASCADE;");
+        //db.Database.ExecuteSqlRaw("TRUNCATE TABLE \"public\".refresh_tokens;");
+        //db.Database.ExecuteSqlRaw("TRUNCATE TABLE \"public\".users CASCADE;");
+        db.Database.EnsureDeleted();
+
         InitializeDbForTests(db);
     }
 }

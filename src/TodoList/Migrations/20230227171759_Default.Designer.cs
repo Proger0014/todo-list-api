@@ -12,8 +12,8 @@ using TodoList.DB;
 namespace TodoList.Migrations
 {
     [DbContext(typeof(PostgresqlDbContext))]
-    [Migration("20230226182431_ValueGeneratedNeverForRT")]
-    partial class ValueGeneratedNeverForRT
+    [Migration("20230227171759_Default")]
+    partial class Default
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,7 +46,7 @@ namespace TodoList.Migrations
                         .HasColumnName("finger_print");
 
                     b.Property<long>("UserId")
-                        .HasColumnType("bigserial")
+                        .HasColumnType("bigint")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
@@ -61,8 +61,11 @@ namespace TodoList.Migrations
             modelBuilder.Entity("TodoList.Models.User.User", b =>
                 {
                     b.Property<long>("Id")
-                        .HasColumnType("bigserial")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Login")
                         .IsRequired()

@@ -10,7 +10,7 @@ internal class AuthControllerTestsDataInit
 
         var loginDtoAndIdDataCollection = new List<object[]>();
 
-        for (int i = 0; i < MAX_COUNT; i++)
+        for (int i = 1; i <= MAX_COUNT; i++)
         {
             loginDtoAndIdDataCollection.Add(new object[]
             {

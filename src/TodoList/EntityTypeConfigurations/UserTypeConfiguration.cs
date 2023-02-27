@@ -10,9 +10,5 @@ public class UserTypeConfiguration : IEntityTypeConfiguration<User>
     {
         builder.ToTable("users");
         builder.HasKey(user => user.Id);
-        builder.Property(user => user.Id)
-            .HasColumnName("id")
-            .HasColumnType("bigserial")
-            .ValueGeneratedNever();
     }
 }

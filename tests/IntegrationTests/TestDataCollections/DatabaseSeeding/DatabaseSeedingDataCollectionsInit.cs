@@ -15,12 +15,12 @@ internal class DatabaseSeedingDataCollectionsInit
 
         var users = new List<User>();
 
-        for (int i = 0; i < MAX_COUNT; i++)
+        for (int i = 1; i <= MAX_COUNT; i++)
         {
             users.Add(
                 new User()
                 {
-                    Id = i,
+                    Id = 0,
                     NickName = $"user-test-{i}",
                     Login = $"user-login-{i}",
                     Password = $"user-password-{i}"
