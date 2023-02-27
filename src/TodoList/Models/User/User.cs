@@ -1,18 +1,15 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using TodoList.Models.Id;
 
 namespace TodoList.Models.User;
 
-[Table("users", Schema = "public")]
 public class User : ID<long>, IEquatable<User>
 {
-    [Key, Column("id"), DataType("bigserial")]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
     public string NickName { get; set; }
     public string Login { get; set; }
     public string Password { get; set; }
+
+    public ICollection<RefreshToken.RefreshToken> RefreshTokens { get; set; }
 
     public User(long id, string nickname, string login, string password)
     {

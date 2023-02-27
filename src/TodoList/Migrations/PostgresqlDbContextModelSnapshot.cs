@@ -2,25 +2,23 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using TodoList;
+using TodoList.DB;
 
 #nullable disable
 
 namespace TodoList.Migrations
 {
-    [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20230109165308_InitialCreate")]
-    partial class InitialCreate
+    [DbContext(typeof(PostgresqlDbContext))]
+    partial class PostgresqlDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.1")
+                .HasDefaultSchema("public")
+                .HasAnnotation("ProductVersion", "7.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -28,7 +26,6 @@ namespace TodoList.Migrations
             modelBuilder.Entity("TodoList.Models.RefreshToken.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -46,23 +43,23 @@ namespace TodoList.Migrations
                         .HasColumnName("finger_print");
 
                     b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                        .HasColumnType("bigserial")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
                         .HasName("pk_refresh_tokens");
 
-                    b.ToTable("refresh_tokens", (string)null);
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_refresh_tokens_user_id");
+
+                    b.ToTable("refresh_tokens", "public");
                 });
 
             modelBuilder.Entity("TodoList.Models.User.User", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("bigserial")
                         .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Login")
                         .IsRequired()
@@ -83,6 +80,23 @@ namespace TodoList.Migrations
                         .HasName("pk_users");
 
                     b.ToTable("users", "public");
+                });
+
+            modelBuilder.Entity("TodoList.Models.RefreshToken.RefreshToken", b =>
+                {
+                    b.HasOne("TodoList.Models.User.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired()
+                        .HasConstraintName("fk_refresh_tokens_users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TodoList.Models.User.User", b =>
+                {
+                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }

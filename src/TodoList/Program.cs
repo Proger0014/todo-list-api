@@ -1,22 +1,25 @@
 using TodoList.Models.User;
-using Microsoft.EntityFrameworkCore;
 using TodoList.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using TodoList.Models.RefreshToken;
-using TodoList;
 using TodoList.Extensions;
 using TodoList.Services.DateTimeProvider;
+using TodoList.DB;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<ApplicationDBContext>(options =>
+builder.Services.AddDbContext<IApplicationDbContext, PostgresqlDbContext>(options =>
+{
     options
         .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-        .UseSnakeCaseNamingConvention());
+        .UseSnakeCaseNamingConvention();
+});
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
@@ -47,16 +50,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // с
             ClockSkew = TimeSpan.Zero
         };
     }); // подключение этой аутентификации
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.WithOrigins("http://127.0.0.1:5500")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 

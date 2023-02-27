@@ -1,3 +1,4 @@
+using TodoList.DB;
 using TodoList.Models.Base;
 
 namespace TodoList.Models.RefreshToken;
@@ -6,7 +7,7 @@ public class RefreshTokenRepository :
     CommonProps<RefreshToken, Guid>,
     IRefreshTokenRepository
 {
-    public RefreshTokenRepository(ApplicationDBContext context)
+    public RefreshTokenRepository(IApplicationDbContext context)
         : base(context) { }
 
     public RefreshToken? GetByUserId(long userId)

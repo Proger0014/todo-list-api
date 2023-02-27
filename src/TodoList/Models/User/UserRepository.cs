@@ -1,3 +1,4 @@
+using TodoList.DB;
 using TodoList.Models.Base;
 
 namespace TodoList.Models.User;
@@ -6,7 +7,7 @@ public class UserRepository :
     CommonProps<User, long>,
     IUserRepository
 {
-    public UserRepository(ApplicationDBContext context)
+    public UserRepository(IApplicationDbContext context)
         : base(context) { }
 
     public User? GetByUserLogin(string login, string password)

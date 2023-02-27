@@ -1,17 +1,16 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using TodoList.Models.Id;
 
 namespace TodoList.Models.RefreshToken;
 
 public class RefreshToken : ID<Guid>, IEquatable<RefreshToken>
 {
-    [Key]
     public Guid Id { get; set; }
     public string FingerPrint { get; set; }
     public long UserId { get; set; }
     public DateTime AddedTime { get; set; }
     public DateTime ExpirationTime { get; set; }
+
+    public User.User User { get; set; }
 
     public RefreshToken(
         Guid id, long userId,

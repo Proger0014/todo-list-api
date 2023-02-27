@@ -6,7 +6,6 @@ using TodoList.Models.User;
 
 namespace TodoList.Services;
 
-// TODO: добавить в DI container
 public class TokensService
 {
     private readonly IConfiguration _configuration;
